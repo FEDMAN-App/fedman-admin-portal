@@ -1,4 +1,6 @@
+import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
+
 
 
 import '../../../core/constants/app_colors.dart';
@@ -41,23 +43,27 @@ class FederationListItem extends StatelessWidget {
                   backgroundColor: AppColors.greyColor.withOpacity(0.2),
                 ),
                 16.horizontalSpace,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      federation.name,
-                      style: AppTextStyles.navlinks1.copyWith(
-                        fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        federation.name,
+                        style: AppTextStyles.navlinks1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize:  16,
+
+                        ),
                       ),
-                    ),
-                    4.verticalSpace,
-                    Text(
-                      'Created ${federation.createdDate}',
-                      style: AppTextStyles.body2.copyWith(
-                        color: AppColors.greyColor,
+                      4.verticalSpace,
+                      Text(
+                        'Created ${federation.createdDate}',
+                        style: AppTextStyles.body2.copyWith(
+                          color: AppColors.greyColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
 
               ],),
@@ -93,7 +99,7 @@ class FederationListItem extends StatelessWidget {
               ),
             ),
             2.horizontalSpace,
-            Expanded(
+           ResponsiveHelper.isMobile(context)?SizedBox(): Expanded(
               flex: 2,
               child: Row(
                 children: [

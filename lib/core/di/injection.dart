@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../presentation/account/data/repositories/account_repo.dart';
 import '../../presentation/account/data/repositories/local/local_auth_repo.dart';
 import '../network/api_client.dart';
-import '../utils/managers/google_signin_manager.dart';
+
 
 
 
@@ -18,7 +18,7 @@ Future<void> setupDependencyInjection() async {
   getIt.registerSingleton<SharedPreferences>(sharedPreferences);
   // Register ApiClient
   getIt.registerLazySingleton<ApiClient>(
-    () => ApiClient(baseUrl: 'http://api.fedman.io'),
+    () => ApiClient(baseUrl: 'https://api.fedman.io'),
   );
 
 

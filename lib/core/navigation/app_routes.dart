@@ -5,6 +5,7 @@ import 'package:fedman_admin_app/presentation/account/screens/splash_screen.dart
 import 'package:fedman_admin_app/presentation/disciplines/screens/disciplines_screen.dart';
 import 'package:fedman_admin_app/presentation/events/screens/events_screen.dart';
 import 'package:fedman_admin_app/presentation/federations/screens/add_federation_screen.dart';
+import 'package:fedman_admin_app/presentation/federations/screens/federation_details_screen.dart';
 import 'package:fedman_admin_app/presentation/federations/screens/federations_screen.dart';
 import 'package:fedman_admin_app/presentation/home/home_screen.dart';
 import 'package:fedman_admin_app/presentation/judges/screens/judges_screen.dart';
@@ -72,7 +73,13 @@ class AppRoutes {
             path: RouteName.federations,
             builder: (context, state) => const FederationsScreen(),
           ),
-
+          GoRoute(
+            path: RouteName.federationDetails,
+            builder: (context, state) {
+              final federationId = state.pathParameters['federationId']!;
+              return const FederationDetailsScreen();
+            },
+          ),
           GoRoute(
             path: RouteName.addFederation,
             builder: (context, state) => const AddFederationScreen(),

@@ -19,6 +19,7 @@ class AppTextStyles {
       color: color.withValues(alpha: opacity),
       letterSpacing: letterSpacing,
       fontFamily: fontFamily,
+
     );
   }
 
@@ -60,6 +61,12 @@ class AppTextStyles {
   // Body 2 - 14 Regular
   static TextStyle body2 = getTextStyle(
     fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.baseBlackColor,
+  );
+  // Body 3 - 14 Regular
+  static TextStyle body3 = getTextStyle(
+    fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.baseBlackColor,
   );

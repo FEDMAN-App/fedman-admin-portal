@@ -2,10 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_theme.dart';
 import '../../core/navigation/app_routes.dart';
-import '../../l10n/generated/app_localizations.dart';
+
 
 class FedmanAdminApp extends StatefulWidget {
   const FedmanAdminApp({super.key});
@@ -16,32 +17,14 @@ class FedmanAdminApp extends StatefulWidget {
 
 class _FedmanAdminAppState extends State<FedmanAdminApp> {
 
-
-  @override
-  void initState() {
-
-    super.initState();
-  }
-
-// the setState function here is a must to add
-  void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
-  }
-
-
-
-  @override
-  void dispose() {
-    //AppLanguageService().removeListener(_onLanguageChanged);
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: const Size(1440, 1024),
       minTextAdapt: true,
       splitScreenMode: true,
+      enableScaleText: () => true,
+      enableScaleWH: () => true,
       child: MaterialApp.router(
 
         title: 'Fedman admin',

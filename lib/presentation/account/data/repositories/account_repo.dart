@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:fedman_admin_app/presentation/account/data/models/fedman_user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_response.dart';
 import '../../../../core/utils/managers/google_signin_manager.dart';
+import 'local/local_auth_repo.dart';
 
 class AccountRepo {
   final ApiClient apiClient;
@@ -41,5 +43,11 @@ class AccountRepo {
     } else {
       return ApiResponse.failure(response.data["message"]);
     }
+  }
+
+  Future<ApiResponse<void>> logout() async {
+    final localAuthRepo = GetIt.instance<LocalAuthRepository>();
+    await localAuthRepo.clearAuthData();
+    return ApiResponse.success(null, message: "Logged out successfully");
   }
 }

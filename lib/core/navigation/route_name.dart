@@ -5,6 +5,7 @@ class RouteName{
   static const String splash = '/';
   static const String home = '/home';
   static const String federations = '/federations';
+  static const String federationDetails = '/federations/:federationId';
   static const String addFederation = '/addFederation';
   static const String disciplines = '/disciplines';
   static const String events = '/events';

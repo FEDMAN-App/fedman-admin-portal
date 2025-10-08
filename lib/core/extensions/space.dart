@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 extension DoubleExtension on num {
   double get flexibleHeight => ScreenUtil().setHeight(this);
    double get flexibleWidth => ScreenUtil().setWidth(this);
-  // double get fontSize => ScreenUtil().setSp(this);
+   double get fontSize => ScreenUtil().setSp(this);
   // //Size get size => ScreenUtil().uiSize;
   // double get screenW => ScreenUtil().screenWidth * (this / 100);
   // double get screenH => ScreenUtil().screenHeight * (this / 100);

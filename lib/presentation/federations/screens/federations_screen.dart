@@ -1,11 +1,13 @@
 import 'package:fedman_admin_app/core/constants/app_constants.dart';
 import 'package:fedman_admin_app/core/navigation/route_name.dart';
+import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 
 import '../../../core/common_widgets/custom_buttons.dart';
 import '../../../core/common_widgets/custom_text_form_field.dart';
+import '../../../core/common_widgets/responsive_row_column.dart';
 import '../../../core/common_widgets/screen_body.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/space.dart';
@@ -73,6 +75,8 @@ class _FederationsScreenState extends State<FederationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile=ResponsiveHelper.isMobile(context);
+    final isTablet=ResponsiveHelper.isTablet(context);
     return ScreenBody(
       child: Padding(
         padding: EdgeInsets.all(24),
@@ -82,29 +86,32 @@ class _FederationsScreenState extends State<FederationsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Federations',
-                      style: AppTextStyles.subHeading1.copyWith(
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Federations',
+                        style: AppTextStyles.subHeading1.copyWith(
+                        ),
                       ),
-                    ),
-                    4.verticalSpace,
-                    Text(
-                      'Manage all registered federations and their administrators',
-                      style: AppTextStyles.body2.copyWith(
-                        color: AppColors.greyColor,
+                      4.verticalSpace,
+                      Text(
+                        'Manage all registered federations and their administrators',
+                        style: AppTextStyles.body2.copyWith(
+                          color: AppColors.greyColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                10.horizontalSpace,
                 CustomButton(
                   title: 'Add Federation',
                   icon: Icon(
                     Icons.add,
                     color: AppColors.baseWhiteColor,
-                    size: 20,
+                    size:  20,
                   ),
                   onTap: _addFederation,
                 ),
@@ -112,21 +119,31 @@ class _FederationsScreenState extends State<FederationsScreen> {
             ),
             32.verticalSpace,
             if (_hasFederations) ...[
-              Row(
+              ResponsiveWrap(
+
+                //layout: ResponsiveLayout.mobileColumn,
+                spacing: 8,
+                runSpacing: 5,
+
+                wrapAt: ResponsiveLayout.mobileTabletColumn,
+                //columnCrossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+
                   Expanded(
                     flex: 2,
                     child: CustomTextFormField(
+                      prefixIcon: Icon(Icons.search,color: AppColors.greyColor,),
                       controller: _searchController,
                       hintText: 'Search by name or country...',
                     ),
                   ),
-                  16.horizontalSpace,
-                  Expanded(
-                    child: ValueListenableBuilder<String?>(
-                      valueListenable: _selectedLocationNotifier,
-                      builder: (context, selectedLocation, child) {
-                        return FederationFilterDropdown(
+                  isTablet || isMobile?0.horizontalSpace: 10.horizontalSpace,
+                  ValueListenableBuilder<String?>(
+                    valueListenable: _selectedLocationNotifier,
+                    builder: (context, selectedLocation, child) {
+                      return Expanded(
+
+                        child: FederationFilterDropdown(
                           title: 'All Locations',
                           selectedValue: selectedLocation,
                           items: _locations,
@@ -134,28 +151,29 @@ class _FederationsScreenState extends State<FederationsScreen> {
                           onChanged: (value) {
                             _selectedLocationNotifier.value = value;
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                  16.horizontalSpace,
-                  Expanded(
-                    child: ValueListenableBuilder<String?>(
-                      valueListenable: _selectedTypeNotifier,
-                      builder: (context, selectedType, child) {
-                        return FederationFilterDropdown(
+                  isTablet || isMobile?0.horizontalSpace: 10.horizontalSpace,
+                  ValueListenableBuilder<String?>(
+                    valueListenable: _selectedTypeNotifier,
+                    builder: (context, selectedType, child) {
+                      return Expanded(
+                        child: FederationFilterDropdown(
                           title: 'Select type',
                           selectedValue: selectedType,
                           items: _types,
                           onChanged: (value) {
                             _selectedTypeNotifier.value = value;
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
+
               24.verticalSpace,
               Container(
                 decoration: BoxDecoration(
@@ -202,7 +220,7 @@ class _FederationsScreenState extends State<FederationsScreen> {
                               ),
                             ),
                           ),
-                          Expanded(
+                          ResponsiveHelper.isMobile(context)?SizedBox():Expanded(
                             flex: 2,
                             child: Text(
                               'Location',
@@ -240,6 +258,7 @@ class _FederationsScreenState extends State<FederationsScreen> {
                 valueListenable: _currentPageNotifier,
                 builder: (context, currentPage, child) {
                   return PaginationWidget(
+                    visiblePageCount: ResponsiveHelper.isMobile(context)? 1:5,
                     currentPage: currentPage,
                     totalPages: _totalPages,
                     onPrevious: () {
@@ -276,7 +295,7 @@ class _FederationsScreenState extends State<FederationsScreen> {
   }
 
   void _viewFederation(FederationModel federation) {
-    print('View federation: ${federation.name}');
+    context.go('/federations/${federation.id}');
   }
 
   void _editFederation(FederationModel federation) {

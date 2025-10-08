@@ -1,5 +1,6 @@
 import 'package:fedman_admin_app/core/common_widgets/common_widgets_barrel.dart';
 import 'package:fedman_admin_app/core/common_widgets/google_social_login_button.dart';
+import 'package:fedman_admin_app/core/common_widgets/responsive_row_column.dart';
 import 'package:fedman_admin_app/core/constants/app_assets.dart';
 import 'package:fedman_admin_app/core/constants/app_colors.dart';
 import 'package:fedman_admin_app/core/extensions/extensions_barrell.dart';
@@ -7,6 +8,7 @@ import 'package:fedman_admin_app/core/navigation/app_routes.dart';
 import 'package:fedman_admin_app/core/navigation/route_name.dart';
 import 'package:fedman_admin_app/core/theme/app_text_styles.dart';
 import 'package:fedman_admin_app/core/utils/logger_service.dart';
+import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -76,15 +78,19 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: BlocBuilder<LoginBloc, LoginState>(
+
           builder: (context, state) {
+            final isMobile=ResponsiveHelper.isMobile(context);
+            final isTablet=ResponsiveHelper.isTablet(context);
             return ScreenBody(
               enableScroll: false,
-              child: Row(
+              child: ResponsiveRowColumn(
+                layout: ResponsiveHelper.isMobile(context)?ResponsiveLayout.alwaysColumn:ResponsiveLayout.alwaysRow,
                 children: [
                   Expanded(
                     flex: 1,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 100),
+                      padding: EdgeInsets.symmetric(horizontal: isMobile || isTablet? 30: 100),
                       height: double.maxFinite,
                       width: double.maxFinite,
                       color: AppColors.primaryColor,
@@ -97,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 200,
                             height: 200,
                           ),
-                          const SizedBox(height: 40),
+                          40.verticalSpace,
                           Text(
                             'Welcome!',
                             style: AppTextStyles.heading1.copyWith(
@@ -112,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Expanded(
+                          ResponsiveHelper.isMobile(context)?SizedBox(): Expanded(
                             child: Image.asset(
                               'assets/images/login_screen_showcase_image.png',
                               fit: BoxFit.contain,
@@ -135,10 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             builder: (context, value, child) {
                               return value
                                   ? SizedBox(
-                                      width: 300,
-                                      child: web.renderButton()
+                                  width: 300,
+                                  child: web.renderButton()
 
-                                    )
+                              )
                                   : SizedBox();
                             },
                           ),
@@ -148,28 +154,42 @@ class _LoginScreenState extends State<LoginScreen> {
                             const CircularProgressIndicator(),
                           ],
                           const Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Copyright© 2025 by fedman.io',
+                          ResponsiveRowColumn(
+
+                            rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            layout: isMobile || isTablet ? ResponsiveLayout.alwaysColumn:ResponsiveLayout.alwaysRow,
+                              children: [
+                            isMobile || isTablet?
+                            TextButton(
+                              onPressed: () {
+                              },
+                              child: Text(
+                                'Privacy Policy',
                                 style: AppTextStyles.navlinks1,
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  // TODO: Navigate to privacy policy
-                                },
-                                child: Text(
-                                  'Privacy Policy',
-                                  style: AppTextStyles.navlinks1,
-                                ),
+                            ):SizedBox(),
+                            Text(
+                              'Copyright© 2025 by fedman.io',
+                              style: AppTextStyles.navlinks1,
+                            ),
+                            ResponsiveHelper.isDesktop(context)?TextButton(
+                              onPressed: () {
+                                // TODO: Navigate to privacy policy
+                              },
+                              child: Text(
+                                'Privacy Policy',
+                                style: AppTextStyles.navlinks1,
                               ),
-                            ],
-                          ),
+                            ):SizedBox()
+                          ]),
+
                         ],
                       ),
                     ),
                   ),
+
+
+
                 ],
               ),
             );

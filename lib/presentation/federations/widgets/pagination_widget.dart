@@ -10,6 +10,7 @@ class PaginationWidget extends StatelessWidget {
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
   final Function(int)? onPageSelected;
+  final int visiblePageCount;
 
   const PaginationWidget({
     super.key,
@@ -18,6 +19,7 @@ class PaginationWidget extends StatelessWidget {
     this.onPrevious,
     this.onNext,
     this.onPageSelected,
+    this.visiblePageCount = 5,
   });
 
   @override
@@ -63,25 +65,31 @@ class PaginationWidget extends StatelessWidget {
   List<Widget> _buildPageNumbers() {
     List<Widget> pages = [];
     
-    if (totalPages <= 7) {
+    final maxVisiblePages = visiblePageCount + 2; // +2 for first and last page
+    
+    if (totalPages <= maxVisiblePages) {
       for (int i = 1; i <= totalPages; i++) {
         pages.add(_buildPageButton(i));
       }
     } else {
       pages.add(_buildPageButton(1));
       
-      if (currentPage > 4) {
+      final halfVisible = (visiblePageCount / 2).floor();
+      final showLeftEllipsis = currentPage > halfVisible + 2;
+      final showRightEllipsis = currentPage < totalPages - halfVisible - 1;
+      
+      if (showLeftEllipsis) {
         pages.add(_buildEllipsis());
       }
       
-      int start = (currentPage - 2).clamp(2, totalPages - 4);
-      int end = (currentPage + 2).clamp(5, totalPages - 1);
+      int start = (currentPage - halfVisible).clamp(2, totalPages - visiblePageCount);
+      int end = (currentPage + halfVisible).clamp(visiblePageCount + 1, totalPages - 1);
       
       for (int i = start; i <= end; i++) {
         pages.add(_buildPageButton(i));
       }
       
-      if (currentPage < totalPages - 3) {
+      if (showRightEllipsis) {
         pages.add(_buildEllipsis());
       }
       

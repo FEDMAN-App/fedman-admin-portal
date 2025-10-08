@@ -9,6 +9,10 @@ class AppAssets {
   // Icons
   static const String googleIcon = 'assets/images/goole_icon.svg';
   static const String fileUploadIcon = 'assets/images/upload.svg';
+  static const String pdfFileIcon = 'assets/images/pdf_file_icon.png';
+  static const String downloadIcon = 'assets/images/download_icon.svg';
+  static const String editIcon = 'assets/images/edit_icon.svg';
+  static const String deactivateIcon = 'assets/images/deactivate_icon.svg';
 
   // Navigation Icons
   static const String homeIcon = 'assets/images/home.svg';

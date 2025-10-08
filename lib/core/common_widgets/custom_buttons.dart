@@ -14,6 +14,7 @@ class CustomButton extends StatelessWidget {
   final Color? borderColor;
   final Function()? onTap;
   final bool isLoading;
+  final bool showTitle;
   final bool isLeadingIcon;
   final bool isSecondaryBtn;
 
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
     this.titleColor,
     this.borderColor,
     this.onTap,
+    this.showTitle = true,
     this.isLoading = false,
     this.isLeadingIcon = true,
     this.isSecondaryBtn = false,
@@ -73,14 +75,16 @@ class CustomButton extends StatelessWidget {
                 )
               else ...[
                 if (icon != null && isLeadingIcon) icon,
-                Text(
-                  title,
-                  style: AppTextStyles.cta2.copyWith(
-                    color: isSecondaryBtn
-                        ? AppColors.primaryColor
-                        : AppColors.baseWhiteColor,
-                  ),
-                ),
+                showTitle
+                    ? Text(
+                        title,
+                        style: AppTextStyles.cta2.copyWith(
+                          color: isSecondaryBtn
+                              ? AppColors.primaryColor
+                              : AppColors.baseWhiteColor,
+                        ),
+                      )
+                    : SizedBox(),
                 if (icon != null && !isLeadingIcon) icon,
               ],
             ],

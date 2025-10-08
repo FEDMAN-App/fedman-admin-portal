@@ -1,10 +1,13 @@
+import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import '../constants/app_assets.dart';
 import '../constants/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../extensions/space.dart';
+import '../../presentation/account/data/repositories/account_repo.dart';
 
 class ResponsiveNavigationWrapper extends StatefulWidget {
   final Widget child;
@@ -90,13 +93,76 @@ class _ResponsiveNavigationWrapperState extends State<ResponsiveNavigationWrappe
     }
   }
 
+  Future<void> _showLogoutConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Confirm Logout',
+            style: AppTextStyles.subHeading1,
+          ),
+          content: Text(
+            'Are you sure you want to logout?',
+            style: AppTextStyles.body1,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancel',
+                style: AppTextStyles.body1.copyWith(
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(
+                'Logout',
+                style: AppTextStyles.body1.copyWith(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await _performLogout();
+    }
+  }
+
+  Future<void> _performLogout() async {
+    try {
+      final accountRepo = GetIt.instance<AccountRepo>();
+      await accountRepo.logout();
+      if (mounted) {
+        context.go('/login');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < _mobileBreakpoint;
-        
-        if (isMobile) {
+        final isMobile = ResponsiveHelper.isMobile(context);
+        final isTablet = ResponsiveHelper.isTablet(context);
+
+        if (isMobile || isTablet ) {
           return _buildMobileLayout(context);
         } else {
           return _buildDesktopLayout(context);
@@ -343,7 +409,7 @@ class _ResponsiveNavigationWrapperState extends State<ResponsiveNavigationWrappe
                 color: Colors.grey.shade700,
               ),
             ),
-            onTap: () {},
+            onTap: _showLogoutConfirmation,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           ),
         ],
