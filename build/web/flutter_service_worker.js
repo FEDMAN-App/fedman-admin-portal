@@ -3,11 +3,11 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"flutter_bootstrap.js": "7dd4a27d81df84e17cba0372cc172cac",
+const RESOURCES = {"flutter_bootstrap.js": "78735cdfd0c2fe75313d6608f6f6c25c",
 "version.json": "37d3d51b7f21e35520ec44a2883c50ec",
 "index.html": "3bfb36156b6f6fa6877f857b4b43397b",
 "/": "3bfb36156b6f6fa6877f857b4b43397b",
-"main.dart.js": "702adc42f26c875327e659e387958908",
+"main.dart.js": "7cc9bf39c044e4b1b1b7035767836d02",
 "flutter.js": "888483df48293866f9f41d3d9274a779",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
@@ -281,7 +281,7 @@ const RESOURCES = {"flutter_bootstrap.js": "7dd4a27d81df84e17cba0372cc172cac",
 "assets/packages/flutter_dropzone_web/assets/flutter_dropzone.js": "dddc5c70148f56609c3fb6b29929388e",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/AssetManifest.bin": "503eb8af8f40f46d6de732fcf2205f09",
-"assets/fonts/MaterialIcons-Regular.otf": "74f9097e8d977c9342ad9b71cbb4ae15",
+"assets/fonts/MaterialIcons-Regular.otf": "7ba4a2abd864cdcb5a85c42232839b32",
 "assets/assets/images/fedman_logo_login_screen.png": "27cb11ee81a84331ba4e7ebcbd42273f",
 "assets/assets/images/continental_icon.png": "456617626ac9e624e3a8e59a995dfbe7",
 "assets/assets/images/home.svg": "50e92a3c983502653df9c5920bbfcee8",
