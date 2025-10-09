@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/network/api_client.dart';
 import '../../data/models/fedman_user_model.dart';
 import '../../data/repositories/account_repo.dart';
 import '../../data/repositories/local/local_auth_repo.dart';
@@ -39,6 +40,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             accessToken: result.accessToken!,
           );
 
+          //----setting auth token to api client----/
+          GetIt.I.get<ApiClient>().setAuthToken(localAuthRepository.getAccessToken());
+
+          /// ------///
           if (localAuthRepository.isFirstTimeLaunch()) {
             await localAuthRepository.setFirstTimeLaunchComplete();
           }

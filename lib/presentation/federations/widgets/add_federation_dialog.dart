@@ -34,11 +34,11 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
       ValueNotifier([]);
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _federations = [
-    {'name': 'American Equestrian Federation', 'isSelected': false},
-    {'name': 'Canadian Horse Sports Federation', 'isSelected': false},
-    {'name': 'British Equestrian Federation', 'isSelected': false},
-    {'name': 'Australian Equestrian Federation', 'isSelected': false},
+  final List<Map<String, Object>> _federations = <Map<String, Object>>[
+    <String, Object>{'name': 'American Equestrian Federation', 'isSelected': false},
+    <String, Object>{'name': 'Canadian Horse Sports Federation', 'isSelected': false},
+    <String, Object>{'name': 'British Equestrian Federation', 'isSelected': false},
+    <String, Object>{'name': 'Australian Equestrian Federation', 'isSelected': false},
   ];
 
   @override
@@ -109,10 +109,9 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
     return ValueListenableBuilder<String>(
       valueListenable: _searchQueryNotifier,
       builder: (context, searchQuery, child) {
-        final filteredFederations = _federations.where((federation) {
-          return federation['name'].toString().toLowerCase().contains(
-            searchQuery.toLowerCase(),
-          );
+        final filteredFederations = _federations.where((Map<String, Object> federation) {
+          final String name = federation['name'] as String? ?? '';
+          return name.toLowerCase().contains(searchQuery.toLowerCase());
         }).toList();
 
         return Padding(
@@ -131,11 +130,12 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
     );
   }
 
-  Widget _buildFederationItem(Map<String, dynamic> federation) {
+  Widget _buildFederationItem(Map<String, Object> federation) {
     return ValueListenableBuilder<List<String>>(
       valueListenable: _selectedFederationsNotifier,
       builder: (context, selectedFederations, child) {
-        final isSelected = selectedFederations.contains(federation['name']);
+        final String federationName = federation['name'] as String? ?? '';
+        final isSelected = selectedFederations.contains(federationName);
 
         return GestureDetector(
           onTap: () {
@@ -143,9 +143,9 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
               _selectedFederationsNotifier.value,
             );
             if (isSelected) {
-              currentSelected.remove(federation['name']);
+              currentSelected.remove(federationName);
             } else {
-              currentSelected.add(federation['name']);
+              currentSelected.add(federationName);
             }
             _selectedFederationsNotifier.value = currentSelected;
           },
@@ -181,7 +181,7 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        federation['name'],
+                        federationName,
                         style: AppTextStyles.subHeading2.copyWith(
                           color: isSelected
                               ? AppColors.primaryColor

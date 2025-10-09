@@ -4,7 +4,9 @@ import 'package:fedman_admin_app/core/navigation/route_name.dart';
 import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/common_widgets/custom_buttons.dart';
@@ -13,13 +15,22 @@ import '../../../core/common_widgets/screen_body.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../country_and_its_cities/bloc/country_bloc.dart';
+import '../../country_and_its_cities/data/countries_repo.dart';
+import '../../country_and_its_cities/data/models/country_and_its_cities.dart';
+import '../../country_and_its_cities/widgets/city_dropdown_view.dart';
+import '../../country_and_its_cities/widgets/country_drop_down_view.dart';
+import '../bloc/add_federation_bloc/add_federation_bloc.dart';
+import '../data/enums/federation_types.dart';
+import '../data/models/federation_model.dart';
+import '../data/repositories/federation_repo.dart';
 import '../widgets/federation_added_successfully_dialog_widget.dart';
-import '../widgets/federation_filter_dropdown.dart';
 import '../widgets/federation_type_selector.dart';
 import '../widgets/file_upload_widget.dart';
 
 class AddFederationScreen extends StatefulWidget {
-  const AddFederationScreen({super.key});
+  final int? federationId;
+  const AddFederationScreen({super.key, this.federationId});
 
   @override
   State<AddFederationScreen> createState() => _AddFederationScreenState();
@@ -31,10 +42,12 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
   final TextEditingController _postCodeController = TextEditingController();
   
   final ValueNotifier<String?> _selectedTypeNotifier = ValueNotifier(null);
-  final ValueNotifier<String?> _selectedCountryNotifier = ValueNotifier(null);
+  final ValueNotifier<CountryAndItsCities?> _selectedCountryNotifier = ValueNotifier(null);
   final ValueNotifier<String?> _selectedCityNotifier = ValueNotifier(null);
   final ValueNotifier<bool> _hasLogoNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _hasDocumentsNotifier = ValueNotifier(false);
+  
+  bool get isEditing => widget.federationId != null;
   
   String? _logoFileName;
   String? _documentsFileName;
@@ -46,33 +59,57 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
   DropzoneViewController? _logoDropzoneController;
   DropzoneViewController? _documentsDropzoneController;
 
-  final List<String> _countries = [
-    'Select country',
-    'United States',
-    'United Kingdom',
-    'Germany',
-    'France',
-    'Italy',
-    'Spain',
-    'Australia',
-    'Canada',
-  ];
 
-  final List<String> _cities = [
-    'City',
-    'New York',
-    'London',
-    'Berlin',
-    'Paris',
-    'Rome',
-    'Madrid',
-    'Sydney',
-    'Toronto',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    if (isEditing) {
+      context.read<AddFederationBloc>().add(
+        LoadFederationForEditRequested(federationId: widget.federationId!),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ScreenBody(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => CountryBloc(GetIt.I<CountryRepo>()),
+        ),
+        BlocProvider(
+          create: (context) => AddFederationBloc(
+            federationRepo: GetIt.I<FederationRepo>(),
+          ),
+        ),
+      ],
+      child: BlocListener<AddFederationBloc, AddFederationState>(
+        listener: (context, state) {
+          if (state is AddFederationLoaded) {
+            _populateFormWithFederation(state.federation);
+          } else if (state is AddFederationSuccess) {
+            SnackbarUtils.showCustomToast(
+              context,
+              state.message,
+              isError: false,
+            );
+            if (state.isUpdate) {
+              context.go(RouteName.federations);
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) => FederationAddedSuccessfullyDialogWidget(),
+              );
+            }
+          } else if (state is AddFederationError) {
+            SnackbarUtils.showCustomToast(
+              context,
+              state.message,
+              isError: true,
+            );
+          }
+        },
+        child: ScreenBody(
       child: Padding(
         padding: EdgeInsets.all(24),
         child: RoundedContainerWidget(
@@ -83,7 +120,7 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Create a new federation',
+                  isEditing ? 'Edit Federation' : 'Create a new federation',
                   style: AppTextStyles.subHeading1.copyWith(
                   ),
                 ),
@@ -123,17 +160,21 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
                     ),
                     12.verticalSpace,
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: ValueListenableBuilder<String?>(
+                          child: ValueListenableBuilder<CountryAndItsCities?>(
                             valueListenable: _selectedCountryNotifier,
                             builder: (context, selectedCountry, child) {
-                              return FederationFilterDropdown(
-                                title: 'Select country',
-                                selectedValue: selectedCountry,
-                                items: _countries,
-                                onChanged: (value) {
-                                  _selectedCountryNotifier.value = value;
+                              return CountryDropdownView(
+                                hintText: 'Select country',
+                                selectedCountry: selectedCountry,
+                                onCountrySelected: (country) {
+                                  _selectedCountryNotifier.value = country;
+                                  _selectedCityNotifier.value = null;
+                                  if (country != null) {
+                                    context.read<CountryBloc>().countrySelected(country);
+                                  }
                                 },
                               );
                             },
@@ -144,12 +185,13 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
                           child: ValueListenableBuilder<String?>(
                             valueListenable: _selectedCityNotifier,
                             builder: (context, selectedCity, child) {
-                              return FederationFilterDropdown(
-                                title: 'City',
-                                selectedValue: selectedCity,
-                                items: _cities,
-                                onChanged: (value) {
-                                  _selectedCityNotifier.value = value;
+                              return CityDropdownView(
+
+
+                                hintText: 'Select city',
+                                selectedCity: selectedCity,
+                                onCitySelected: (city) {
+                                  _selectedCityNotifier.value = city;
                                 },
                               );
                             },
@@ -222,9 +264,15 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
                     ),
                     16.horizontalSpace,
                     Expanded(
-                      child: CustomButton(
-                        title: 'Create Federation',
-                        onTap: _handleCreateFederation,
+                      child: BlocBuilder<AddFederationBloc, AddFederationState>(
+                        builder: (context, state) {
+                          final isLoading = state is AddFederationLoading;
+                          return CustomButton(
+                            title: isEditing ? 'Update Federation' : 'Create Federation',
+                            isLoading: isLoading,
+                            onTap: isLoading ? null : _handleCreateFederation,
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -232,6 +280,8 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
               ],
             ),
           ),
+        ),
+      ),
         ),
       ),
     );
@@ -390,20 +440,111 @@ class _AddFederationScreenState extends State<AddFederationScreen> {
 
   }
 
-  void _handleCreateFederation() {
-    print('Creating federation...');
-    print('Name: ${_federationNameController.text}');
-    print('Type: ${_selectedTypeNotifier.value}');
-    print('Country: ${_selectedCountryNotifier.value}');
-    print('City: ${_selectedCityNotifier.value}');
-    print('Street: ${_streetAddressController.text}');
-    print('Post code: ${_postCodeController.text}');
-    print('Logo file: $_logoFileName');
-    print('Documents file: $_documentsFileName');
+  void _populateFormWithFederation(FederationModel federation) {
+    _federationNameController.text = federation.name ?? '';
+    _streetAddressController.text = federation.streetAddress ?? '';
+    _postCodeController.text = federation.postCode ?? '';
+    _selectedTypeNotifier.value = federation.type?.displayName;
+    
+    // Set country if available
+    if (federation.country != null) {
+      final country = CountryAndItsCities(
+        iso2: '',
+        iso3: '',
+        country: federation.country!,
+        cities: federation.city != null ? [federation.city!] : [],
+      );
+      _selectedCountryNotifier.value = country;
+      context.read<CountryBloc>().countrySelected(country);
+    }
+    
+    // Set city if available
+    if (federation.city != null) {
+      _selectedCityNotifier.value = federation.city;
+    }
+  }
 
-    showDialog(context: context, builder: (context) {
-      return FederationAddedSuccessfullyDialogWidget();
-    },);
+  void _handleCreateFederation() {
+    if (_federationNameController.text.trim().isEmpty) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please enter federation name',
+        isError: true,
+      );
+      return;
+    }
+
+    if (_selectedTypeNotifier.value == null) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please select federation type',
+        isError: true,
+      );
+      return;
+    }
+
+    if (_selectedCountryNotifier.value == null) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please select Country',
+        isError: true,
+      );
+      return;
+    }
+
+    if (_selectedCityNotifier.value == null) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please select City',
+        isError: true,
+      );
+      return;
+    }
+
+    if (_streetAddressController.text.isEmpty) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please add street address',
+        isError: true,
+      );
+      return;
+    }
+
+
+    if (_postCodeController.text.isEmpty) {
+      SnackbarUtils.showCustomToast(
+        context,
+        'Please add postal code',
+        isError: true,
+      );
+      return;
+    }
+
+    final federationType = FederationType.values.firstWhere(
+      (type) => type.displayName == _selectedTypeNotifier.value,
+    );
+
+    final federation = FederationModel(
+      name: _federationNameController.text.trim(),
+      type: federationType,
+      country: _selectedCountryNotifier.value!.country,
+      city: _selectedCityNotifier.value!,
+      streetAddress: _streetAddressController.text.trim(),
+      postCode: _postCodeController.text.trim(),
+    );
+
+    if (isEditing) {
+      context.read<AddFederationBloc>().add(
+        UpdateFederationRequested(
+          federationId: widget.federationId!,
+          federation: federation,
+        ),
+      );
+    } else {
+      context.read<AddFederationBloc>().add(
+        CreateFederationRequested(federation: federation),
+      );
+    }
   }
 
   @override

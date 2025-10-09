@@ -11,6 +11,7 @@ import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../data/models/federation_model.dart';
+import '../data/enums/federation_types.dart';
 
 class LinkedInternationalFederationMembers extends StatefulWidget {
   const LinkedInternationalFederationMembers({super.key});
@@ -22,30 +23,58 @@ class LinkedInternationalFederationMembers extends StatefulWidget {
 
 class _LinkedInternationalFederationMembersState
     extends State<LinkedInternationalFederationMembers> {
-  final List<FederationMemberData> _members = [
-    FederationMemberData(
-      federation: FederationModel(
-        id: '1',
-        name: 'American Horse Services',
-        type: 'National',
-        location: 'USA',
-        createdDate: '1/15/2024',
-        avatar: AppConstants.dummyImageUrl,
-      ),
-      expiryDate: '1/15/2026',
-      isExpired: false,
+  final List<FederationModel> _members = [
+    FederationModel(
+      id: 0,
+      name: 'European Equestrian Federation',
+      type: FederationType.international,
+      country: 'New York',
+      city: 'New York',
+      streetAddress: '123 Main St',
+      postCode: '10001',
+      createdDate: '1/15/2024',
+      fedLogo: AppConstants.dummyImageUrl,
+      status: 'active',
+      updatedAt: '1/15/2024',
     ),
-    FederationMemberData(
-      federation: FederationModel(
-        id: '2',
-        name: 'British Equestrian Sports Alliance',
-        type: 'National',
-        location: 'UK',
-        createdDate: '1/15/2024',
-        avatar: AppConstants.dummyImageUrl,
-      ),
-      expiryDate: '1/15/2024',
-      isExpired: true,
+    FederationModel(
+      id: 1,
+      name: 'American Horse Association',
+      type: FederationType.national,
+      country: 'United States',
+      city: 'Los Angeles',
+      streetAddress: '456 Oak Ave',
+      postCode: '90210',
+      createdDate: '1/15/2024',
+      fedLogo: AppConstants.dummyImageUrl,
+      status: 'active',
+      updatedAt: '1/15/2024',
+    ),
+    FederationModel(
+      id: 3,
+      name: 'British Dressage Federation',
+      type: FederationType.international,
+      country: 'United Kingdom',
+      city: 'Sunnyvale',
+      streetAddress: '789 Pine Rd',
+      postCode: 'SW1A 1AA',
+      createdDate: '1/15/2024',
+      fedLogo: AppConstants.dummyImageUrl,
+      status: 'active',
+      updatedAt: '1/15/2024',
+    ),
+    FederationModel(
+      id: 4,
+      name: 'Australian Equestrian Federation',
+      type: FederationType.international,
+      country: 'Australia',
+      city: 'California',
+      streetAddress: '321 Elm St',
+      postCode: '2000',
+      createdDate: '1/15/2024',
+      fedLogo: AppConstants.dummyImageUrl,
+      status: 'active',
+      updatedAt: '1/15/2024',
     ),
   ];
 
@@ -96,7 +125,7 @@ class _LinkedInternationalFederationMembersState
     );
   }
 
-  Widget _buildMemberCard(FederationMemberData memberData) {
+  Widget _buildMemberCard(FederationModel memberData) {
     final isMobile = ResponsiveHelper.isMobile(context);
 
     return Container(
@@ -122,7 +151,7 @@ class _LinkedInternationalFederationMembersState
               shape: BoxShape.circle,
             ),
             child: CustomCachedImageWidget(
-              url: memberData.federation.avatar,
+              url: memberData.fedLogo ?? AppConstants.dummyImageUrl,
             ),
           ),
           16.horizontalSpace,
@@ -132,7 +161,7 @@ class _LinkedInternationalFederationMembersState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  memberData.federation.name,
+                  memberData.name ?? 'Unknown Federation',
                   style: AppTextStyles.body1.copyWith(
                       color: AppColors.neutral700
                   ),
@@ -147,7 +176,7 @@ class _LinkedInternationalFederationMembersState
                     ),
                     4.horizontalSpace,
                     Text(
-                      memberData.federation.location,
+                      memberData.country ?? 'Unknown Location',
                       style: AppTextStyles.navlinks1.copyWith(
                         color: AppColors.neutral600,
                       ),
@@ -164,7 +193,7 @@ class _LinkedInternationalFederationMembersState
                     ),
                     4.horizontalSpace,
                     Text(
-                      memberData.federation.createdDate,
+                      memberData.createdDate ?? 'Unknown Date',
                       style: AppTextStyles.body2.copyWith(
                         color: AppColors.neutral600,
                       ),
@@ -183,11 +212,11 @@ class _LinkedInternationalFederationMembersState
     );
   }
 
-  Widget _buildExpiryBadge(FederationMemberData memberData) {
+  Widget _buildExpiryBadge(FederationModel memberData) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: memberData.isExpired
+        color: (memberData.status ?? 'active') != "active"
             ? AppColors.negative100
             : AppColors.tertiary50,
         borderRadius: BorderRadius.circular(6),
@@ -198,17 +227,17 @@ class _LinkedInternationalFederationMembersState
           Icon(
             Icons.calendar_today,
             size: 16,
-            color: memberData.isExpired
+            color: (memberData.status ?? 'active') != "active"
                 ? AppColors.negativeColor
                 : AppColors.infoColor,
           ),
           4.horizontalSpace,
           Text(
-            memberData.isExpired
-                ? 'Expired ${memberData.expiryDate}'
-                : 'Expire at: ${memberData.expiryDate}',
+            (memberData.status ?? 'active') != "active"
+                ? 'Expired ${memberData.createdDate ?? 'Unknown Date'}'
+                : 'Expire at: ${memberData.createdDate ?? 'Unknown Date'}',
             style: AppTextStyles.body2.copyWith(
-              color: memberData.isExpired
+              color: (memberData.status ?? 'active') != "active"
                   ? AppColors.negativeColor
                   : AppColors.infoColor,
               fontWeight: FontWeight.w500,

@@ -23,6 +23,7 @@ class ResponsiveRowColumn extends StatelessWidget {
   final double? spacing;
   final bool wrapInExpanded;
   final bool excludeSpacingFromExpanded;
+  final List<int>? flexValues;
 
   const ResponsiveRowColumn({
     super.key,
@@ -40,6 +41,7 @@ class ResponsiveRowColumn extends StatelessWidget {
     this.spacing,
     this.wrapInExpanded = false,
     this.excludeSpacingFromExpanded = true,
+    this.flexValues,
   });
 
   // Backward compatibility constructor
@@ -61,7 +63,8 @@ class ResponsiveRowColumn extends StatelessWidget {
        rowMainAxisSize = mainAxisSize,
        columnMainAxisAlignment = mainAxisAlignment,
        columnCrossAxisAlignment = crossAxisAlignment,
-       columnMainAxisSize = mainAxisSize;
+       columnMainAxisSize = mainAxisSize,
+       flexValues = null;
 
   @override
   Widget build(BuildContext context) {
@@ -106,12 +109,27 @@ class ResponsiveRowColumn extends StatelessWidget {
   }
 
   List<Widget> _wrapChildrenInExpanded(List<Widget> childrenList) {
-    return childrenList.map((child) {
+    return childrenList.asMap().entries.map((entry) {
+      final index = entry.key;
+      final child = entry.value;
+      
       // Don't wrap spacing widgets (SizedBox) in Expanded if excludeSpacingFromExpanded is true
       if (excludeSpacingFromExpanded && child is SizedBox) {
         return child;
       }
-      return Expanded(child: child);
+      
+      // Calculate flex index accounting for spacing widgets
+      int flexIndex = index;
+      if (excludeSpacingFromExpanded && spacing != null) {
+        flexIndex = index ~/ 2; // Each spacing widget reduces the flex index
+      }
+      
+      // Use custom flex value if provided, otherwise default to 1
+      final flex = (flexValues != null && flexIndex < flexValues!.length) 
+          ? flexValues![flexIndex] 
+          : 1;
+      
+      return Expanded(flex: flex, child: child);
     }).toList();
   }
 

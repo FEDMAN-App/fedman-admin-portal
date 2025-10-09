@@ -23,6 +23,7 @@ _FedmanUserModel _$FedmanUserModelFromJson(Map<String, dynamic> json) =>
           ?.map((e) => (e as num).toInt())
           .toList(),
       profilePhotoUrl: json['profilePhotoUrl'] as String?,
+      role: json['role'] as String?,
     );
 
 Map<String, dynamic> _$FedmanUserModelToJson(_FedmanUserModel instance) =>
@@ -38,6 +39,7 @@ Map<String, dynamic> _$FedmanUserModelToJson(_FedmanUserModel instance) =>
       'sendSmsVerification': ?instance.sendSmsVerification,
       'federationIds': ?instance.federationIds,
       'profilePhotoUrl': ?instance.profilePhotoUrl,
+      'role': ?instance.role,
     };
 
 _AddressModel _$AddressModelFromJson(Map<String, dynamic> json) =>

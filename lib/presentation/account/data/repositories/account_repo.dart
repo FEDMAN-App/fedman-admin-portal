@@ -11,6 +11,8 @@ import 'local/local_auth_repo.dart';
 class AccountRepo {
   final ApiClient apiClient;
 
+   late FedmanUserModel fedmanUser;
+
   AccountRepo({required this.apiClient});
 
   Future<ApiResponse<FedmanUserModel>> loginWithGoogle(GoogleSignInAccount googleSignInAccount) async {
@@ -34,14 +36,68 @@ class AccountRepo {
     );
 
     if (response.data["status"] == "success") {
+      fedmanUser=FedmanUserModel.fromJson(response.data!["data"]["user"]);
       return ApiResponse.success(
+
         accessToken: response.data!["data"]["access_token"],
-        FedmanUserModel.fromJson(response.data!["data"]["user"]),
+        fedmanUser,
         message: response.data!["message"],
         statusCode: response.statusCode,
       );
     } else {
       return ApiResponse.failure(response.data["message"]);
+    }
+  }
+
+  Future<ApiResponse<String>> getProfilePhoto() async {
+    try {
+      final Response response = await apiClient.get('/auth-service/users/profile/photo');
+
+      if (response.data["status"] == "success") {
+        return ApiResponse.success(
+          response.data["data"] as String,
+          message: response.data["message"],
+          statusCode: response.statusCode,
+        );
+      } else {
+        return ApiResponse.failure(response.data["message"]);
+      }
+    } catch (e) {
+      return ApiResponse.failure('Failed to get profile photo: $e');
+    }
+  }
+
+  Future<ApiResponse<FedmanUserModel>> getUser(String userId) async {
+    try {
+      final Response response = await apiClient.get('/auth-service/users/admin/$userId');
+
+      if (response.data["status"] == "success") {
+        final userData = response.data["data"] as Map<String, dynamic>;
+        
+        // Fetch profile photo URL
+        final profilePhotoResult = await getProfilePhoto();
+        String? profilePhotoUrl;
+        if (profilePhotoResult.success && profilePhotoResult.data != null) {
+          profilePhotoUrl = profilePhotoResult.data;
+        } else {
+          profilePhotoUrl = null;
+        }
+
+        // Add profile photo URL to user data
+        final userDataWithPhoto = Map<String, dynamic>.from(userData);
+        userDataWithPhoto['profilePhotoUrl'] = profilePhotoUrl;
+        fedmanUser = FedmanUserModel.fromJson(userDataWithPhoto);
+        
+        return ApiResponse.success(
+          fedmanUser,
+          message: response.data["message"],
+          statusCode: response.statusCode,
+        );
+      } else {
+        return ApiResponse.failure(response.data["message"]);
+      }
+    } catch (e) {
+      return ApiResponse.failure('Failed to get user: $e');
     }
   }
 

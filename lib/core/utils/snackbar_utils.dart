@@ -115,7 +115,7 @@ class SnackbarUtils {
 
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
                 child: Row(mainAxisSize: MainAxisSize.min,children: [
                   Container(
                     height: 30,

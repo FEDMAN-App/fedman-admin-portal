@@ -34,11 +34,11 @@ class _AddDisciplineDialogState extends State<AddDisciplineDialog> {
       ValueNotifier([]);
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _disciplines = [
-    {'name': 'Agility', 'isSelected': false},
-    {'name': 'Obedience', 'isSelected': false},
-    {'name': 'Dressage', 'isSelected': false},
-    {'name': 'Eventing', 'isSelected': false},
+  final List<Map<String, Object>> _disciplines = <Map<String, Object>>[
+    <String, Object>{'name': 'Agility', 'isSelected': false},
+    <String, Object>{'name': 'Obedience', 'isSelected': false},
+    <String, Object>{'name': 'Dressage', 'isSelected': false},
+    <String, Object>{'name': 'Eventing', 'isSelected': false},
   ];
 
   @override
@@ -108,10 +108,9 @@ class _AddDisciplineDialogState extends State<AddDisciplineDialog> {
     return ValueListenableBuilder<String>(
       valueListenable: _searchQueryNotifier,
       builder: (context, searchQuery, child) {
-        final filteredDisciplines = _disciplines.where((discipline) {
-          return discipline['name'].toString().toLowerCase().contains(
-            searchQuery.toLowerCase(),
-          );
+        final filteredDisciplines = _disciplines.where((Map<String, Object> discipline) {
+          final String name = discipline['name'] as String? ?? '';
+          return name.toLowerCase().contains(searchQuery.toLowerCase());
         }).toList();
 
         return Padding(
@@ -130,11 +129,12 @@ class _AddDisciplineDialogState extends State<AddDisciplineDialog> {
     );
   }
 
-  Widget _buildDisciplineItem(Map<String, dynamic> discipline) {
+  Widget _buildDisciplineItem(Map<String, Object> discipline) {
     return ValueListenableBuilder<List<String>>(
       valueListenable: _selectedDisciplinesNotifier,
       builder: (context, selectedDisciplines, child) {
-        final isSelected = selectedDisciplines.contains(discipline['name']);
+        final String disciplineName = discipline['name'] as String? ?? '';
+        final isSelected = selectedDisciplines.contains(disciplineName);
 
         return GestureDetector(
           onTap: () {
@@ -142,9 +142,9 @@ class _AddDisciplineDialogState extends State<AddDisciplineDialog> {
               _selectedDisciplinesNotifier.value,
             );
             if (isSelected) {
-              currentSelected.remove(discipline['name']);
+              currentSelected.remove(disciplineName);
             } else {
-              currentSelected.add(discipline['name']);
+              currentSelected.add(disciplineName);
             }
             _selectedDisciplinesNotifier.value = currentSelected;
           },
@@ -177,7 +177,7 @@ class _AddDisciplineDialogState extends State<AddDisciplineDialog> {
                 16.horizontalSpace,
                 Expanded(
                   child: Text(
-                    discipline['name'],
+                    disciplineName,
                     style: AppTextStyles.subHeading2.copyWith(
                       color: isSelected
                           ? AppColors.primaryColor

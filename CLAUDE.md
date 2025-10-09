@@ -44,6 +44,17 @@ SvgPicture.asset(AppAssets.myIcon)
 - **Text Styling**: Always use predefined text styles from `@lib/core/theme/app_text_styles.dart` instead of creating inline TextStyle. Available styles include `heading1`, `heading2`, `subHeading1`, `subHeading2`, `body1`, `body2`, `navlinks1`, `navlinks2`, `cta1`, `cta2`
 - **Spacing**: Always use spacing extensions from `@lib/core/extensions/space.dart` instead of hardcoded SizedBox values. Available extensions: `horizontalSpace`, `verticalSpace`, `responsiveHorizontalSpace`, `responsiveVerticalSpace`. Example: `16.verticalSpace` instead of `SizedBox(height: 16)`
 - **Navigation**: Always use go_router for navigation instead of Navigator. Use `context.go('/route')` for navigation, `context.push('/route')` for overlay navigation, and `context.pop()` to go back. Import go_router: `import 'package:go_router/go_router.dart'`
+- **Network Images**: Always use `CustomCachedImageWidget` from `@lib/core/common_widgets/custom_cached_image_widget.dart` instead of `Image.network()` for loading network images. This provides automatic caching, loading states, and error handling.
+
+Example:
+```dart
+// Instead of Image.network()
+CustomCachedImageWidget(
+  url: imageUrl,
+  width: 100,
+  height: 100,
+)
+```
 
 ## Dependency Injection Guidelines
 
@@ -73,11 +84,25 @@ All repository methods must return `ApiResponse<T>` for consistent error handlin
 - Use `ApiResponse.failure(message)` for error responses
 - DO NOT add try-catch in repository methods - let errors bubble up to BLoC layer
 
+**IMPORTANT: Before implementing any new repository method, always ask for the API response structure first to determine whether to use:**
+- `ApiResponse<T>` for simple data responses
+- `ApiResponse<PaginatedResponse<T>>` for paginated data with metadata (total, page, limit, totalPages)
+
 Example:
 ```dart
 Future<ApiResponse<User>> getUser() async {
   final response = await apiClient.get('/user');
   return ApiResponse.success(User.fromJson(response.data));
+}
+
+// For paginated responses
+Future<ApiResponse<PaginatedResponse<User>>> getUsers() async {
+  final response = await apiClient.get('/users');
+  final paginatedResponse = PaginatedResponse.fromJson(
+    response.data["data"],
+    (json) => User.fromJson(json),
+  );
+  return ApiResponse.success(paginatedResponse);
 }
 ```
 
@@ -177,6 +202,9 @@ class _MyWidgetState extends State<MyWidget> {
 - Wrap reactive widgets with `ValueListenableBuilder`
 - Always dispose ValueNotifiers in the dispose method
 - Use descriptive names ending with "Notifier" (e.g., `_selectedLocationNotifier`)
+
+### Snackbar Usage Guidelines
+- **Always use custom snackbar from snackbar utils**
 
 ### Git Commit Guidelines
 - Do not include "Generated with Claude Code" attribution in commit messages

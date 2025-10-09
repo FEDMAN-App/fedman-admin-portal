@@ -17,6 +17,7 @@ abstract class FedmanUserModel with _$FedmanUserModel {
     @JsonKey(includeIfNull: false) bool? sendSmsVerification,
     @JsonKey(includeIfNull: false) List<int>? federationIds,
     @JsonKey(includeIfNull: false) String? profilePhotoUrl,
+    @JsonKey(includeIfNull: false) String? role,
   }) = _FedmanUserModel;
 
   factory FedmanUserModel.fromJson(Map<String, dynamic> json) =>

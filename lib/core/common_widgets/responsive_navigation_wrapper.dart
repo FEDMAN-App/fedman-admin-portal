@@ -1,13 +1,18 @@
 import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import '../../presentation/account/data/repositories/local/local_auth_repo.dart';
 import '../constants/app_assets.dart';
 import '../constants/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../extensions/space.dart';
 import '../../presentation/account/data/repositories/account_repo.dart';
+import '../../presentation/account/blocs/user_bloc.dart';
+import '../../presentation/account/data/models/fedman_user_model.dart';
+import 'custom_cached_image_widget.dart';
 
 class ResponsiveNavigationWrapper extends StatefulWidget {
   final Widget child;
@@ -157,17 +162,34 @@ class _ResponsiveNavigationWrapperState extends State<ResponsiveNavigationWrappe
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = ResponsiveHelper.isMobile(context);
-        final isTablet = ResponsiveHelper.isTablet(context);
+    return BlocProvider(
+      create: (context) => UserBloc(
+        accountRepo: GetIt.instance<AccountRepo>(),
+      )..add(GetUserRequested(userId: GetIt.I.get<LocalAuthRepository>().getUserId()!)),
+      child: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isMobile = ResponsiveHelper.isMobile(context);
+            final isTablet = ResponsiveHelper.isTablet(context);
 
-        if (isMobile || isTablet ) {
-          return _buildMobileLayout(context);
-        } else {
-          return _buildDesktopLayout(context);
-        }
-      },
+            if (isMobile || isTablet ) {
+              return _buildMobileLayout(context);
+            } else {
+              return _buildDesktopLayout(context);
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -338,50 +360,89 @@ class _ResponsiveNavigationWrapperState extends State<ResponsiveNavigationWrappe
   }
 
   Widget _buildUserProfile() {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          onPressed: () {},
-        ),
-        16.horizontalSpace,
-        Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              AppAssets.fedmanLogo,
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        String userName = 'Loading...';
+        String userRole = 'Loading...';
+        String? profilePhotoUrl;
+        
+        if (state is UserSuccess) {
+          userName = '${state.user.firstName ?? ''} ${state.user.lastName ?? ''}'.trim();
+          if (userName.isEmpty) userName = 'Unknown User';
+          userRole = state.user.role=="super_admin"?"Super Admin": 'Admin';
+          profilePhotoUrl = state.user.profilePhotoUrl;
+        } else if (state is UserError) {
+          userName = 'Error loading user';
+          userRole =  'User';
+        }
+        
+        return Row(
+          children: [
+            IconButton(
+              icon: SvgPicture.asset(
+                AppAssets.bellIcon,
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  Colors.grey.shade700,
+                  BlendMode.srcIn,
+                ),
+              ),
+              onPressed: () {},
+            ),
+            16.horizontalSpace,
+            Container(
               width: 40,
               height: 40,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        12.horizontalSpace,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Mark Ferdinand',
-              style: AppTextStyles.body1.copyWith(
-                fontWeight: FontWeight.w600,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: profilePhotoUrl != null && profilePhotoUrl.isNotEmpty
+                    ? CustomCachedImageWidget(
+                        url: profilePhotoUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        errorWidget: Image.asset(
+                          AppAssets.fedmanLogo,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset(
+                        AppAssets.fedmanLogo,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
-            Text(
-              'Admin',
-              style: AppTextStyles.body2.copyWith(
-                color: Colors.grey.shade600,
-              ),
+            12.horizontalSpace,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userName,
+                  style: AppTextStyles.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  userRole,
+                  style: AppTextStyles.body2.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
+            8.horizontalSpace,
+            const Icon(Icons.keyboard_arrow_down),
           ],
-        ),
-        8.horizontalSpace,
-        const Icon(Icons.keyboard_arrow_down),
-      ],
+        );
+      },
     );
   }
 

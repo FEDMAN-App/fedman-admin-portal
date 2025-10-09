@@ -1,8 +1,8 @@
 import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-
-
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -36,37 +36,68 @@ class FederationListItem extends StatelessWidget {
           children: [
             Expanded(
               flex: 4,
-              child: Row(mainAxisSize: MainAxisSize.min,children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundImage: NetworkImage(federation.avatar),
-                  backgroundColor: AppColors.greyColor.withOpacity(0.2),
-                ),
-                16.horizontalSpace,
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        federation.name,
-                        style: AppTextStyles.navlinks1.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize:  16,
-
-                        ),
-                      ),
-                      4.verticalSpace,
-                      Text(
-                        'Created ${federation.createdDate}',
-                        style: AppTextStyles.body2.copyWith(
-                          color: AppColors.greyColor,
-                        ),
-                      ),
-                    ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: AppColors.greyColor.withOpacity(0.2),
+                    child:
+                        federation.fedLogo != null &&
+                            federation.fedLogo!.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              federation.fedLogo!,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return SvgPicture.asset(
+                                  AppAssets.federationIcon,
+                                  width: 28,
+                                  height: 28,
+                                  colorFilter: ColorFilter.mode(
+                                    AppColors.greyColor,
+                                    BlendMode.srcIn,
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : SvgPicture.asset(
+                            AppAssets.federationIcon,
+                            width: 28,
+                            height: 28,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.greyColor,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                   ),
-                ),
-
-              ],),
+                  16.horizontalSpace,
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          federation.name,
+                          style: AppTextStyles.navlinks1.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        4.verticalSpace,
+                        Text(
+                          'Created ${federation.createdDate}',
+                          style: AppTextStyles.body2.copyWith(
+                            color: AppColors.greyColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             2.horizontalSpace,
             Expanded(
@@ -74,22 +105,19 @@ class FederationListItem extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(federation.type).withOpacity(0.1),
+                      color: _getTypeColor(federation.type.displayName).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: _getTypeColor(federation.type),
+                        color: _getTypeColor(federation.type.displayName),
                         width: 1,
                       ),
                     ),
                     child: Text(
-                      federation.type,
+                      federation.type.displayName,
                       style: AppTextStyles.body2.copyWith(
-                        color: _getTypeColor(federation.type),
+                        color: _getTypeColor(federation.type.displayName),
                         fontWeight: FontWeight.w500,
                         fontSize: 12,
                       ),
@@ -99,36 +127,44 @@ class FederationListItem extends StatelessWidget {
               ),
             ),
             2.horizontalSpace,
-           ResponsiveHelper.isMobile(context)?SizedBox(): Expanded(
-              flex: 2,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    size: 16,
-                    color: AppColors.greyColor,
-                  ),
-                  4.horizontalSpace,
-                  Text(
-                    federation.location,
-                    style: AppTextStyles.body2.copyWith(
-                      color: AppColors.greyColor,
+            ResponsiveHelper.isMobile(context)
+                ? SizedBox()
+                : Expanded(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: AppColors.greyColor,
+                        ),
+                        4.horizontalSpace,
+                        Text(
+                          federation.country,
+                          style: AppTextStyles.body2.copyWith(
+                            color: AppColors.greyColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
             16.horizontalSpace,
             Builder(
               builder: (context) {
                 return IconButton(
                   onPressed: () {
-                    final RenderBox button = context.findRenderObject() as RenderBox;
-                    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                    final RenderBox button =
+                        context.findRenderObject() as RenderBox;
+                    final RenderBox overlay =
+                        Overlay.of(context).context.findRenderObject()
+                            as RenderBox;
                     final RelativeRect position = RelativeRect.fromRect(
                       Rect.fromPoints(
                         button.localToGlobal(Offset.zero, ancestor: overlay),
-                        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                        button.localToGlobal(
+                          button.size.bottomRight(Offset.zero),
+                          ancestor: overlay,
+                        ),
                       ),
                       Offset.zero & overlay.size,
                     );

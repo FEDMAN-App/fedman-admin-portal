@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -15,7 +16,7 @@ class ApiClient {
 
   }) {
     _dio.options.connectTimeout = const Duration(seconds: 40);
-    _dio.options.sendTimeout = const Duration(seconds: 90);
+   // _dio.options.sendTimeout = const Duration(seconds: 90);
     _dio.options.receiveTimeout = const Duration(seconds: 90);
     _dio.options.baseUrl = baseUrl;
     _dio.options.contentType = "application/json";
@@ -127,11 +128,14 @@ class ApiClient {
   Future<bool> get checkConnectivity async {
     if (!kIsWeb) {
       try {
-        final result = await InternetAddress.lookup('google.com');
+        final result = await InternetAddress.lookup('google.com')
+            .timeout(const Duration(seconds: 5));
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
           return true;
         }
       } on SocketException catch (_) {
+        return false;
+      } on TimeoutException catch (_) {
         return false;
       }
       return false;
@@ -143,8 +147,9 @@ class ApiClient {
   Future<Response> get(
       String path, {
         Map<String, dynamic>? queryParameters,
-      }) =>
-      _dio.get(path, queryParameters: queryParameters);
+      }) {
+    return _dio.get(path, queryParameters: queryParameters);
+  }
 
   Future<Response<dynamic>> post(
       String path, {
