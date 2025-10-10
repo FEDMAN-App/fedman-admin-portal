@@ -134,7 +134,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
             ],
           ),
           24.verticalSpace,
-          _buildFederationWidget("Add Member Federation"),
+          _buildFederationWidget("Add Member Federation (required)"),
         ] else if (widget.selectedType == 'National') ...[
           5.verticalSpace,
           Row(
@@ -154,7 +154,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
             ],
           ),
           24.verticalSpace,
-          _buildFederationWidget("Select your International Affiliations"),
+          _buildFederationWidget("Select your International Affiliations (optional)"),
         ] else if (widget.selectedType == 'Continental') ...[
           5.verticalSpace,
           Row(
@@ -174,7 +174,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
             ],
           ),
           24.verticalSpace,
-          _buildFederationWidget("Add National Federation as Members"),
+          _buildFederationWidget("Add National Federation as Members (required)"),
         ] else if (widget.selectedType == 'Regional') ...[
           5.verticalSpace,
           Row(
@@ -194,7 +194,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
             ],
           ),
           24.verticalSpace,
-          _buildFederationWidget("Select your National Affiliations"),
+          _buildFederationWidget("Select your National Affiliations (optional)"),
         ],
       ],
     );

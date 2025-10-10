@@ -38,3 +38,51 @@ class GetFederationsRequested extends AddFederationEvent {
     this.country,
   });
 }
+
+class LoadMoreFederationsRequested extends AddFederationEvent {
+  final int page;
+  final String? search;
+  final String? federationType;
+  final String? country;
+
+  LoadMoreFederationsRequested({
+    required this.page,
+    this.search,
+    this.federationType,
+    this.country,
+  });
+}
+
+class UploadFederationLogoRequested extends AddFederationEvent {
+  final int federationId;
+  final Uint8List logoFileBytes;
+  final String? fileName;
+
+  UploadFederationLogoRequested({
+    required this.federationId,
+    required this.logoFileBytes,
+    this.fileName,
+  });
+}
+
+class UploadFederationDocumentsRequested extends AddFederationEvent {
+  final int federationId;
+  final Uint8List documentsFileBytes;
+  final String? fileName;
+
+  UploadFederationDocumentsRequested({
+    required this.federationId,
+    required this.documentsFileBytes,
+    this.fileName,
+  });
+}
+
+class UploadMultipleFederationDocumentsRequested extends AddFederationEvent {
+  final int federationId;
+  final List<({Uint8List bytes, String? fileName})> documents;
+
+  UploadMultipleFederationDocumentsRequested({
+    required this.federationId,
+    required this.documents,
+  });
+}

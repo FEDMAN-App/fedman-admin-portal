@@ -1,13 +1,12 @@
 import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../data/models/federation_model.dart';
 import 'federation_context_menu.dart';
+import 'federation_logo_widget.dart';
 
 class FederationListItem extends StatelessWidget {
   final FederationModel federation;
@@ -39,40 +38,9 @@ class FederationListItem extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.greyColor.withOpacity(0.2),
-                    child:
-                        federation.fedLogo != null &&
-                            federation.fedLogo!.isNotEmpty
-                        ? ClipOval(
-                            child: Image.network(
-                              federation.fedLogo!,
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return SvgPicture.asset(
-                                  AppAssets.federationIcon,
-                                  width: 28,
-                                  height: 28,
-                                  colorFilter: ColorFilter.mode(
-                                    AppColors.greyColor,
-                                    BlendMode.srcIn,
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : SvgPicture.asset(
-                            AppAssets.federationIcon,
-                            width: 28,
-                            height: 28,
-                            colorFilter: ColorFilter.mode(
-                              AppColors.greyColor,
-                              BlendMode.srcIn,
-                            ),
-                          ),
+                  FederationLogoWidget(
+                    federationId: federation.id!,
+                    size: 56,
                   ),
                   16.horizontalSpace,
                   Flexible(

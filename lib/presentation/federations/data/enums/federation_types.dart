@@ -8,7 +8,11 @@ enum FederationType {
   @JsonValue('CONTINENTAL')
   continental('CONTINENTAL', 'Continental'),
   @JsonValue('REGIONAL')
-  regional('REGIONAL', 'Regional');
+  regional('REGIONAL', 'Regional'),
+  @JsonValue('No_TYPE_SELECTED')
+  noType('NO_TYPE_SELECTED', 'No type selected');
+
+
 
   const FederationType(this.apiValue, this.displayName);
 

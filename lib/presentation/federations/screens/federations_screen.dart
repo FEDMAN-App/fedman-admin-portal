@@ -1,3 +1,4 @@
+import 'package:fedman_admin_app/core/navigation/app_routes.dart';
 import 'package:fedman_admin_app/core/navigation/route_name.dart';
 import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
 import 'package:fedman_admin_app/core/utils/debouncer.dart';
@@ -354,7 +355,9 @@ class _FederationsScreenContentState extends State<_FederationsScreenContent> {
   }
 
   void _editFederation(FederationModel federation) {
-    print('Edit federation: ${federation.name}');
+
+    //context.go('${RouteName.addFederation}/${federation.id}');
+    context.go('/addFederation/${federation.id}');
   }
 
   void _deactivateFederation(FederationModel federation) {

@@ -82,7 +82,11 @@ class AppRoutes {
           ),
           GoRoute(
             path: RouteName.addFederation,
-            builder: (context, state) => const AddFederationScreen(),
+            builder: (context, state) {
+              final int? id = int.tryParse(state.pathParameters['id']!);
+
+              return  AddFederationScreen(federationId: id,);
+            },
           ),
           GoRoute(
             path: RouteName.disciplines,

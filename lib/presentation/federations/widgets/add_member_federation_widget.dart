@@ -39,13 +39,17 @@ class AddMemberFederationWidget extends StatefulWidget {
 class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
   final TextEditingController _searchController = TextEditingController();
   final ValueNotifier<List<int>> _selectedMembersNotifier = ValueNotifier([]);
+  final ScrollController _scrollController = ScrollController();
   late final Debouncer _searchDebouncer;
+  int _currentPage = 1;
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
     super.initState();
     _searchDebouncer = Debouncer(delay: const Duration(milliseconds: 500));
     _searchController.addListener(_onSearchChanged);
+    _scrollController.addListener(_onScroll);
   }
 
   void _onSearchChanged() {
@@ -55,6 +59,7 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
   }
 
   void _triggerSearch() {
+    _currentPage = 1;
     context.read<AddFederationBloc>().add(
       GetFederationsRequested(
         page: 1,
@@ -62,6 +67,30 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
         federationType: widget.federationType,
       ),
     );
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreFederations();
+    }
+  }
+
+  void _loadMoreFederations() {
+    final currentState = context.read<AddFederationBloc>().state;
+    if (currentState is FederationsSuccess && 
+        !currentState.isLoadingMore &&
+        currentState.page < currentState.totalPages) {
+      
+      _currentPage = currentState.page + 1;
+      context.read<AddFederationBloc>().add(
+        LoadMoreFederationsRequested(
+          page: _currentPage,
+          search: _searchController.text.isEmpty ? null : _searchController.text,
+          federationType: widget.federationType,
+        ),
+      );
+    }
   }
 
   @override
@@ -72,6 +101,7 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
       decoration: BoxDecoration(
         color: AppColors.neutral50,
         borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+        border: Border.all(color: AppColors.neutral200)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,43 +114,20 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
           ),
           16.verticalSpace,
 
-          Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 57,
-                  child: CustomTextFormField(
-                    controller: _searchController,
-                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                    hintText: 'Search federations...',
-                    prefixIcon: Icon(Icons.search, color: AppColors.greyColor),
-                  ),
-                ),
-              ),
-              // 24.horizontalSpace,
-              // ValueListenableBuilder<List<int>>(
-              //   valueListenable: _selectedMembersNotifier,
-              //   builder: (context, selectedMembers, _) {
-              //     return CustomButton(
-              //       isLeadingIcon: true,
-              //       icon: Padding(
-              //         padding:  EdgeInsets.only(right: 10.0),
-              //         child: SvgPicture.asset(AppAssets.federationIcon,colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),width: 20,height: 20,),
-              //       ),
-              //       title: 'Add Selected (${selectedMembers.length})',
-              //       isSecondaryBtn: true,
-              //       onTap: selectedMembers.isNotEmpty
-              //           ? () => widget.onSelect?.call(selectedMembers)
-              //           : null,
-              //     );
-              //   },
-              // ),
-            ],
+          SizedBox(
+            height: 57,
+            child: CustomTextFormField(
+              controller: _searchController,
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              hintText: 'Search federations...',
+              prefixIcon: Icon(Icons.search, color: AppColors.greyColor),
+            ),
           ),
           24.verticalSpace,
 
-          Expanded(
+          Flexible(
             child: BlocConsumer<AddFederationBloc, AddFederationState>(
+              buildWhen: (previous, current) => current is FederationsLoading || current is FederationsSuccess || current is FederationsError,
               listener: (context, state) {
                 if (state is FederationsError) {
                   SnackbarUtils.showCustomToast(
@@ -136,7 +143,7 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is FederationsSuccess) {
-                  return _buildFederationsList(state.federations);
+                  return _buildFederationsList(state.federations, state.isLoadingMore);
                 } else if (state is FederationsError) {
                   return Center(
                     child: RetryWidget(
@@ -145,8 +152,8 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
                     ),
                   );
                 }
-                
-                return _buildFederationsList([]);
+
+                return _buildFederationsList([], false);
               },
             ),
           ),
@@ -157,15 +164,25 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
     );
   }
 
-  Widget _buildFederationsList(List<FederationModel> federations) {
+  Widget _buildFederationsList(List<FederationModel> federations, bool isLoadingMore) {
     return ValueListenableBuilder<List<int>>(
       valueListenable: _selectedMembersNotifier,
       builder: (context, selectedMembers, _) {
         return ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 1),
-          itemCount: federations.length,
+          controller: _scrollController,
+
+          padding: EdgeInsets.symmetric(horizontal: 1,vertical: 0),
+          itemCount: federations.length + (isLoadingMore ? 1 : 0),
           separatorBuilder: (_, index) => 12.verticalSpace,
           itemBuilder: (context, index) {
+            if (index >= federations.length) {
+              return Container(
+                padding: EdgeInsets.all(16),
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(),
+              );
+            }
+            
             final federation = federations[index];
             final isSelected = selectedMembers.contains(federation.id);
 
@@ -214,6 +231,7 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
                     16.horizontalSpace,
                     Expanded(
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -253,6 +271,7 @@ class _AddMemberFederationWidgetState extends State<AddMemberFederationWidget> {
   void dispose() {
     _searchController.dispose();
     _selectedMembersNotifier.dispose();
+    _scrollController.dispose();
     _searchDebouncer.dispose();
     super.dispose();
   }

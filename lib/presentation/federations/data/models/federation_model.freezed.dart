@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FederationModel {
 
- int? get id; String get name;@FederationTypeConverter() FederationType get type;@JsonKey(name: 'address') String get streetAddress;@JsonKey(name: 'postalCode') String get postCode; String get city; String get country;@JsonKey(name: 'logoUrl') String? get fedLogo; List<dynamic> get documents; String? get status;@JsonKey(name: 'createdAt') String? get createdDate;@JsonKey(name: 'updatedAt') String? get updatedAt;@JsonKey(includeIfNull: false) List<int> get memberFederationIdsWhenCreation;@JsonKey(includeIfNull: false) List<int> get parentFederationIdsWhenCreation; int get memberCount; int get parentCount;
+ int? get id; String get name;@FederationTypeConverter() FederationType get type;@JsonKey(name: 'address') String get streetAddress;@JsonKey(name: 'postalCode') String get postCode; String get city; String get country;@JsonKey(name: 'logoUrl') String? get fedLogo; List<dynamic> get documents;@JsonKey(includeIfNull: false) String? get status;@JsonKey(name: 'createdAt', includeIfNull: false) String? get createdDate;@JsonKey(name: 'updatedAt', includeIfNull: false) String? get updatedAt;@JsonKey(includeIfNull: false) List<int> get memberFederationIdsWhenCreation;@JsonKey(includeIfNull: false) List<int> get parentFederationIdsWhenCreation; int get memberCount; int get parentCount;
 /// Create a copy of FederationModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $FederationModelCopyWith<$Res>  {
   factory $FederationModelCopyWith(FederationModel value, $Res Function(FederationModel) _then) = _$FederationModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(name: 'logoUrl') String? fedLogo, List<dynamic> documents, String? status,@JsonKey(name: 'createdAt') String? createdDate,@JsonKey(name: 'updatedAt') String? updatedAt,@JsonKey(includeIfNull: false) List<int> memberFederationIdsWhenCreation,@JsonKey(includeIfNull: false) List<int> parentFederationIdsWhenCreation, int memberCount, int parentCount
+ int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(name: 'logoUrl') String? fedLogo, List<dynamic> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false) List<int> memberFederationIdsWhenCreation,@JsonKey(includeIfNull: false) List<int> parentFederationIdsWhenCreation, int memberCount, int parentCount
 });
 
 
@@ -168,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents,  String? status, @JsonKey(name: 'createdAt')  String? createdDate, @JsonKey(name: 'updatedAt')  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FederationModel() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIdsWhenCreation,_that.parentFederationIdsWhenCreation,_that.memberCount,_that.parentCount);case _:
@@ -189,7 +189,7 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents,  String? status, @JsonKey(name: 'createdAt')  String? createdDate, @JsonKey(name: 'updatedAt')  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)  $default,) {final _that = this;
 switch (_that) {
 case _FederationModel():
 return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIdsWhenCreation,_that.parentFederationIdsWhenCreation,_that.memberCount,_that.parentCount);case _:
@@ -209,7 +209,7 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents,  String? status, @JsonKey(name: 'createdAt')  String? createdDate, @JsonKey(name: 'updatedAt')  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(name: 'logoUrl')  String? fedLogo,  List<dynamic> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  List<int> memberFederationIdsWhenCreation, @JsonKey(includeIfNull: false)  List<int> parentFederationIdsWhenCreation,  int memberCount,  int parentCount)?  $default,) {final _that = this;
 switch (_that) {
 case _FederationModel() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIdsWhenCreation,_that.parentFederationIdsWhenCreation,_that.memberCount,_that.parentCount);case _:
@@ -224,7 +224,7 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 @JsonSerializable()
 
 class _FederationModel implements FederationModel {
-  const _FederationModel({this.id, required this.name, @FederationTypeConverter() required this.type, @JsonKey(name: 'address') required this.streetAddress, @JsonKey(name: 'postalCode') required this.postCode, required this.city, required this.country, @JsonKey(name: 'logoUrl') this.fedLogo, final  List<dynamic> documents = const [], this.status, @JsonKey(name: 'createdAt') this.createdDate, @JsonKey(name: 'updatedAt') this.updatedAt, @JsonKey(includeIfNull: false) final  List<int> memberFederationIdsWhenCreation = const [], @JsonKey(includeIfNull: false) final  List<int> parentFederationIdsWhenCreation = const [], this.memberCount = 0, this.parentCount = 0}): _documents = documents,_memberFederationIdsWhenCreation = memberFederationIdsWhenCreation,_parentFederationIdsWhenCreation = parentFederationIdsWhenCreation;
+  const _FederationModel({this.id, required this.name, @FederationTypeConverter() required this.type, @JsonKey(name: 'address') required this.streetAddress, @JsonKey(name: 'postalCode') required this.postCode, required this.city, required this.country, @JsonKey(name: 'logoUrl') this.fedLogo, final  List<dynamic> documents = const [], @JsonKey(includeIfNull: false) this.status, @JsonKey(name: 'createdAt', includeIfNull: false) this.createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false) this.updatedAt, @JsonKey(includeIfNull: false) final  List<int> memberFederationIdsWhenCreation = const [], @JsonKey(includeIfNull: false) final  List<int> parentFederationIdsWhenCreation = const [], this.memberCount = 0, this.parentCount = 0}): _documents = documents,_memberFederationIdsWhenCreation = memberFederationIdsWhenCreation,_parentFederationIdsWhenCreation = parentFederationIdsWhenCreation;
   factory _FederationModel.fromJson(Map<String, dynamic> json) => _$FederationModelFromJson(json);
 
 @override final  int? id;
@@ -242,9 +242,9 @@ class _FederationModel implements FederationModel {
   return EqualUnmodifiableListView(_documents);
 }
 
-@override final  String? status;
-@override@JsonKey(name: 'createdAt') final  String? createdDate;
-@override@JsonKey(name: 'updatedAt') final  String? updatedAt;
+@override@JsonKey(includeIfNull: false) final  String? status;
+@override@JsonKey(name: 'createdAt', includeIfNull: false) final  String? createdDate;
+@override@JsonKey(name: 'updatedAt', includeIfNull: false) final  String? updatedAt;
  final  List<int> _memberFederationIdsWhenCreation;
 @override@JsonKey(includeIfNull: false) List<int> get memberFederationIdsWhenCreation {
   if (_memberFederationIdsWhenCreation is EqualUnmodifiableListView) return _memberFederationIdsWhenCreation;
@@ -295,7 +295,7 @@ abstract mixin class _$FederationModelCopyWith<$Res> implements $FederationModel
   factory _$FederationModelCopyWith(_FederationModel value, $Res Function(_FederationModel) _then) = __$FederationModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(name: 'logoUrl') String? fedLogo, List<dynamic> documents, String? status,@JsonKey(name: 'createdAt') String? createdDate,@JsonKey(name: 'updatedAt') String? updatedAt,@JsonKey(includeIfNull: false) List<int> memberFederationIdsWhenCreation,@JsonKey(includeIfNull: false) List<int> parentFederationIdsWhenCreation, int memberCount, int parentCount
+ int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(name: 'logoUrl') String? fedLogo, List<dynamic> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false) List<int> memberFederationIdsWhenCreation,@JsonKey(includeIfNull: false) List<int> parentFederationIdsWhenCreation, int memberCount, int parentCount
 });
 
 
