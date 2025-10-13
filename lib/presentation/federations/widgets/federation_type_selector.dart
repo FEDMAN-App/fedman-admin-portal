@@ -1,3 +1,4 @@
+import 'package:fedman_admin_app/core/common_widgets/common_widgets_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,12 +14,14 @@ class FederationTypeSelector extends StatefulWidget {
   final String? selectedType;
   final ValueChanged<String> onTypeSelected;
   final Function(List<int> selectedFedIds)? onSelect;
+ final bool editingMode;
 
   const FederationTypeSelector({
     super.key,
     this.selectedType,
     required this.onTypeSelected,
     this.onSelect,
+    this.editingMode=false
   });
 
   @override
@@ -115,88 +118,96 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
             ),
           ],
         ),
-        if (widget.selectedType == 'International') ...[
-          5.verticalSpace,
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 16,
-                color: AppColors.infoColor,
-              ),
-              5.horizontalSpace,
-              Text(
-                'International federations can include national federations as members & oversee their memberships.',
-                style: AppTextStyles.body2.copyWith(
-                  color: AppColors.infoColor,
-                ),
-              ),
-            ],
-          ),
-          24.verticalSpace,
-          _buildFederationWidget("Add Member Federation (required)"),
-        ] else if (widget.selectedType == 'National') ...[
-          5.verticalSpace,
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 16,
-                color: AppColors.infoColor,
-              ),
-              5.horizontalSpace,
-              Text(
-                'Choose international organizations your federation is affiliated with.',
-                style: AppTextStyles.body2.copyWith(
-                  color: AppColors.infoColor,
-                ),
-              ),
-            ],
-          ),
-          24.verticalSpace,
-          _buildFederationWidget("Select your International Affiliations (optional)"),
-        ] else if (widget.selectedType == 'Continental') ...[
-          5.verticalSpace,
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 16,
-                color: AppColors.infoColor,
-              ),
-              5.horizontalSpace,
-              Text(
-                'Continental federations can include national federations as members.',
-                style: AppTextStyles.body2.copyWith(
-                  color: AppColors.infoColor,
-                ),
-              ),
-            ],
-          ),
-          24.verticalSpace,
-          _buildFederationWidget("Add National Federation as Members (required)"),
-        ] else if (widget.selectedType == 'Regional') ...[
-          5.verticalSpace,
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 16,
-                color: AppColors.infoColor,
-              ),
-              5.horizontalSpace,
-              Text(
-                'Select national affiliations for your regional federation.',
-                style: AppTextStyles.body2.copyWith(
-                  color: AppColors.infoColor,
-                ),
-              ),
-            ],
-          ),
-          24.verticalSpace,
-          _buildFederationWidget("Select your National Affiliations (optional)"),
+        if(widget.editingMode)...[
+          12.verticalSpace,
+          InfoWidget(text: "You can edit member or affiliated federations in federation detail page")
         ],
-      ],
+
+        if(!widget.editingMode) ...[
+          if (widget.selectedType == 'International') ...[
+            5.verticalSpace,
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppColors.infoColor,
+                ),
+                5.horizontalSpace,
+                Text(
+                  'International federations can include national federations as members & oversee their memberships.',
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.infoColor,
+                  ),
+                ),
+              ],
+            ),
+            24.verticalSpace,
+            _buildFederationWidget("Add Member Federation (required)"),
+          ] else if (widget.selectedType == 'National') ...[
+            5.verticalSpace,
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppColors.infoColor,
+                ),
+                5.horizontalSpace,
+                Text(
+                  'Choose international organizations your federation is affiliated with.',
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.infoColor,
+                  ),
+                ),
+              ],
+            ),
+            24.verticalSpace,
+            _buildFederationWidget("Select your International Affiliations (optional)"),
+          ] else if (widget.selectedType == 'Continental') ...[
+            5.verticalSpace,
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppColors.infoColor,
+                ),
+                5.horizontalSpace,
+                Text(
+                  'Continental federations can include national federations as members.',
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.infoColor,
+                  ),
+                ),
+              ],
+            ),
+            24.verticalSpace,
+            _buildFederationWidget("Add National Federation as Members (required)"),
+          ] else if (widget.selectedType == 'Regional') ...[
+            5.verticalSpace,
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppColors.infoColor,
+                ),
+                5.horizontalSpace,
+                Text(
+                  'Select national affiliations for your regional federation.',
+                  style: AppTextStyles.body2.copyWith(
+                    color: AppColors.infoColor,
+                  ),
+                ),
+              ],
+            ),
+            24.verticalSpace,
+            _buildFederationWidget("Select your National Affiliations (optional)"),
+          ],
+
+        ]
+         ],
     );
   }
 
@@ -230,7 +241,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
     final isSelected = widget.selectedType == value;
     
     return GestureDetector(
-      onTap: () {
+      onTap: widget.editingMode?null: () {
         widget.onTypeSelected(value);
       },
       child: Container(

@@ -100,6 +100,7 @@ class FederationListItem extends StatelessWidget {
                 : Expanded(
                     flex: 2,
                     child: Row(
+
                       children: [
                         Icon(
                           Icons.location_on,
@@ -107,10 +108,14 @@ class FederationListItem extends StatelessWidget {
                           color: AppColors.greyColor,
                         ),
                         4.horizontalSpace,
-                        Text(
-                          federation.country,
-                          style: AppTextStyles.body2.copyWith(
-                            color: AppColors.greyColor,
+                        Flexible(
+                          child: Text(
+                            federation.country,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.body2.copyWith(
+                              color: AppColors.greyColor,
+                            ),
                           ),
                         ),
                       ],
@@ -128,9 +133,9 @@ class FederationListItem extends StatelessWidget {
                             as RenderBox;
                     final RelativeRect position = RelativeRect.fromRect(
                       Rect.fromPoints(
-                        button.localToGlobal(Offset.zero, ancestor: overlay),
+                        button.localToGlobal(Offset(-30, 5), ancestor: overlay),
                         button.localToGlobal(
-                          button.size.bottomRight(Offset.zero),
+                          button.size.bottomRight(Offset(-30, 5)),
                           ancestor: overlay,
                         ),
                       ),

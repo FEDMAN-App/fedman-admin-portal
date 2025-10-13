@@ -164,11 +164,11 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
 
       // Create federation with appropriate federation IDs
       final federationToCreate = event.federation.copyWith(
-        memberFederationIdsWhenCreation: (event.federation.type.apiValue == 'INTERNATIONAL' || 
+        memberFederationIds: (event.federation.type.apiValue == 'INTERNATIONAL' ||
                                          event.federation.type.apiValue == 'CONTINENTAL') 
                                          ? memberFederationIds 
                                          : [],
-        parentFederationIdsWhenCreation: (event.federation.type.apiValue == 'NATIONAL' || 
+        parentFederationIds: (event.federation.type.apiValue == 'NATIONAL' ||
                                          event.federation.type.apiValue == 'REGIONAL') 
                                          ? parentFederationIds 
                                          : [],
@@ -177,9 +177,9 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
       final result = await federationRepo.createFederation(federationToCreate);
 
       if (result.success && result.data != null) {
-        // Clear the lists after successful creation
-        memberFederationIds.clear();
-        parentFederationIds.clear();
+        // // Clear the lists after successful creation
+        // memberFederationIds.clear();
+        // parentFederationIds.clear();
         
         emit(AddFederationSuccess(
           federation: result.data!,

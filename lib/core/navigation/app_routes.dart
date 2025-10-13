@@ -17,6 +17,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/account/data/repositories/local/local_auth_repo.dart';
+import '../theme/app_text_styles.dart';
 
 class AppRoutes {
   // GoRouter configuration
@@ -39,7 +40,7 @@ class AppRoutes {
         }
       }
 
-      if(!isLoggedIn){
+      if (!isLoggedIn) {
         return RouteName.login;
       }
 
@@ -76,16 +77,28 @@ class AppRoutes {
           GoRoute(
             path: RouteName.federationDetails,
             builder: (context, state) {
-              final federationId = state.pathParameters['federationId']!;
-              return const FederationDetailsScreen();
+              final int? federationId = int.tryParse(
+                state.pathParameters['federationId']!,
+              );
+              if (federationId == null) {
+                return Center(
+                  child: Text(
+                    'Something went wrong',
+                    style: AppTextStyles.subHeading1,
+                  ),
+                );
+              } else {
+                return FederationDetailsScreen(id: federationId);
+              }
             },
           ),
           GoRoute(
             path: RouteName.addFederation,
             builder: (context, state) {
-              final int? id = int.tryParse(state.pathParameters['id']!);
-
-              return  AddFederationScreen(federationId: id,);
+              final int? id = int.tryParse(state.uri.queryParameters['id'] ??"");
+              final extraData = (state.extra as Map<String, bool>?) ?? <String, bool>{};
+              bool comingFromFederationDetailsScreen = extraData["comingFromFederationDetailsScreen"] ?? false;
+              return AddFederationScreen(federationId: id,comingFromFederationDetailsScreen: comingFromFederationDetailsScreen,);
             },
           ),
           GoRoute(

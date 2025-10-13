@@ -20,6 +20,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../data/models/federation_model.dart';
 import '../data/repositories/federation_repo.dart';
 import '../bloc/federations_bloc.dart';
+import '../widgets/delete_federation_dialog.dart';
 import '../widgets/federation_filter_dropdown.dart';
 import '../widgets/federation_list_item.dart';
 import '../widgets/no_federations_widget.dart';
@@ -306,7 +307,7 @@ class _FederationsScreenContentState extends State<_FederationsScreenContent> {
                     onTap: () => _viewFederation(federations[index]),
                     onView: () => _viewFederation(federations[index]),
                     onEdit: () => _editFederation(federations[index]),
-                    onDeactivate: () => _deactivateFederation(federations[index]),
+                    onDeactivate: () => _deleteFederation(federations[index]),
                   );
                 },
               ),
@@ -356,12 +357,31 @@ class _FederationsScreenContentState extends State<_FederationsScreenContent> {
 
   void _editFederation(FederationModel federation) {
 
-    //context.go('${RouteName.addFederation}/${federation.id}');
-    context.go('/addFederation/${federation.id}');
+
+    context.go("/addFederation/?id=${federation.id}");
   }
 
-  void _deactivateFederation(FederationModel federation) {
-    print('Deactivate federation: ${federation.name}');
+  void _deleteFederation(FederationModel federation) {
+    DeleteFederationDialog.show(
+      context: context,
+      federation: federation,
+      onDelete: () {
+        String? federationType = ft.FederationType.getApiValueFromDisplayName(_selectedTypeNotifier.value);
+
+        String? country = _selectedLocationNotifier.value;
+        if (country == 'All Locations') {
+          country = null;
+        }
+        context.read<FederationsBloc>().add(
+          GetFederationsRequested(
+            page: _currentPageNotifier.value,
+            search: _searchController.text.isEmpty ? null : _searchController.text,
+            federationType: federationType,
+            country: country,
+          ),
+        );
+      },
+    );
   }
 
   @override

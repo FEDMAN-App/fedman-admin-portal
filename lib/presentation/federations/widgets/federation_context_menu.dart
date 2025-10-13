@@ -20,7 +20,7 @@ class FederationContextMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,
+
       decoration: BoxDecoration(
         color: AppColors.baseWhiteColor,
         borderRadius: BorderRadius.circular(8),
@@ -35,40 +35,28 @@ class FederationContextMenu extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildMenuItem(
-            icon: Icons.visibility_outlined,
-            title: 'View',
-            onTap: onView,
-          ),
-          _buildDivider(),
-          _buildMenuItem(
-            icon: Icons.edit_outlined,
-            title: 'Edit',
-            onTap: onEdit,
-          ),
-          _buildDivider(),
-          _buildMenuItem(
-            icon: Icons.block_outlined,
-            title: 'Deactivate',
-            onTap: onDeactivate,
-            isDestructive: true,
-          ),
+
+
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem({
+  static Widget _buildMenuItem({
     required IconData icon,
     required String title,
     VoidCallback? onTap,
     bool isDestructive = false,
+    required BuildContext context
   }) {
     return InkWell(
-      onTap: onTap,
+      onTap: (){
+        context.pop();
+        onTap?.call();
+      },
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: double.infinity,
+
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
@@ -91,7 +79,7 @@ class FederationContextMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
+  static Widget _buildDivider() {
     return Container(
       height: 1,
       margin: EdgeInsets.symmetric(horizontal: 8),
@@ -107,27 +95,81 @@ class FederationContextMenu extends StatelessWidget {
     VoidCallback? onDeactivate,
   }) {
     showMenu<void>(
+      menuPadding: EdgeInsets.zero,
       context: context,
       position: position,
-      color: Colors.transparent,
-      elevation: 0,
+      color: AppColors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      constraints: BoxConstraints(maxWidth: 140),
+      elevation: 5,
+
+
       items: [
         PopupMenuItem<void>(
+
+
           padding: EdgeInsets.zero,
-          child: FederationContextMenu(
-            onView: () {
-              context.pop();
-              onView?.call();
-            },
-            onEdit: () {
-              context.pop();
-              onEdit?.call();
-            },
-            onDeactivate: () {
-              context.pop();
-              onDeactivate?.call();
-            },
+          child: _buildMenuItem(
+            context: context,
+            icon: Icons.visibility_outlined,
+            title: 'View',
+            onTap: onView,
           ),
+
+
+        ),
+
+        PopupMenuItem<void>(
+            height: 1,
+            enabled: false,
+          padding: EdgeInsets.zero,
+
+          child: _buildDivider()
+
+
+        ),
+
+        PopupMenuItem<void>(
+
+          padding: EdgeInsets.zero,
+
+          child:
+          _buildMenuItem(
+            context: context,
+            icon: Icons.edit_outlined,
+            title: 'Edit',
+            onTap: onEdit,
+          ),
+
+
+
+        ),
+        PopupMenuItem<void>(
+
+            height: 1,
+            enabled: false,
+            padding: EdgeInsets.zero,
+            child: _buildDivider()
+
+
+        ),
+        PopupMenuItem<void>(
+
+
+
+
+          padding: EdgeInsets.zero,
+
+          child:
+          _buildMenuItem(
+            context: context,
+            icon: Icons.delete,
+            title: 'Delete',
+            onTap: onDeactivate,
+            isDestructive: true,
+          ),
+
+
         ),
       ],
     );

@@ -1,28 +1,38 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fedman_admin_app/core/constants/app_constants.dart';
+import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
+import 'package:fedman_admin_app/presentation/federations/data/models/federation_model.dart';
+import 'package:fedman_admin_app/presentation/federations/widgets/federation_logo_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/common_widgets/custom_buttons.dart';
 import '../../../core/common_widgets/custom_text_form_field.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../bloc/add_federation_bloc/add_federation_bloc.dart';
+import '../bloc/federation_member_bloc/federation_member_bloc.dart';
+import '../data/enums/federation_types.dart';
+import '../data/repositories/federation_repo.dart';
 
 class AddFederationDialog extends StatefulWidget {
-  final Function(List<String>)? onFederationsSelected;
+  final Function(List<FederationModel>)? onFederationsSelected;
+  final int? federationId;
+  final String? federationType;
+  final List<int>? currentMemberIds;
 
-  const AddFederationDialog({super.key, this.onFederationsSelected});
+  const AddFederationDialog({
+    super.key, 
+    this.onFederationsSelected,
+    this.federationId,
+    this.federationType,
+    this.currentMemberIds,
+  });
 
-  static Future<List<String>?> show({required BuildContext context}) {
-    return showDialog<List<String>>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => AddFederationDialog(
-        onFederationsSelected: (federations) =>
-            Navigator.of(context).pop(federations),
-      ),
-    );
-  }
+
 
   @override
   State<AddFederationDialog> createState() => _AddFederationDialogState();
@@ -30,52 +40,130 @@ class AddFederationDialog extends StatefulWidget {
 
 class _AddFederationDialogState extends State<AddFederationDialog> {
   final ValueNotifier<String> _searchQueryNotifier = ValueNotifier('');
-  final ValueNotifier<List<String>> _selectedFederationsNotifier =
+  final ValueNotifier<List<FederationModel>> _selectedFederationsNotifier =
       ValueNotifier([]);
   final TextEditingController _searchController = TextEditingController();
-
-  final List<Map<String, Object>> _federations = <Map<String, Object>>[
-    <String, Object>{'name': 'American Equestrian Federation', 'isSelected': false},
-    <String, Object>{'name': 'Canadian Horse Sports Federation', 'isSelected': false},
-    <String, Object>{'name': 'British Equestrian Federation', 'isSelected': false},
-    <String, Object>{'name': 'Australian Equestrian Federation', 'isSelected': false},
-  ];
+  final ScrollController _scrollController = ScrollController();
+  
+  String? _currentFilterType;
+late AddFederationBloc addFederationBloc;
 
   @override
   void initState() {
     super.initState();
+    addFederationBloc=AddFederationBloc(federationRepo: GetIt.I.get());
     _searchController.addListener(() {
       _searchQueryNotifier.value = _searchController.text;
     });
+    _scrollController.addListener(_onScroll);
+    _fetchFederations();
+  }
+  
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreFederations();
+    }
+  }
+  
+  void _loadMoreFederations() {
+    final currentState = addFederationBloc.state;
+    if (currentState is FederationsSuccess && 
+        !currentState.isLoadingMore &&
+        currentState.page < currentState.totalPages) {
+      
+      addFederationBloc.add(
+        LoadMoreFederationsRequested(
+          page: currentState.page + 1,
+          search: _searchController.text.isEmpty ? null : _searchController.text,
+          federationType: _currentFilterType!,
+        ),
+      );
+    }
+  }
+
+  void _fetchFederations() {
+    if (widget.federationType == null) return;
+    
+    String? filterType;
+    switch (widget.federationType!.toLowerCase()) {
+      case 'international':
+        filterType = FederationType.national.apiValue;
+        break;
+      case 'continental':
+        filterType = FederationType.national.apiValue;
+        break;
+      case 'national':
+        filterType = FederationType.international.apiValue;
+        break;
+      case 'regional':
+        filterType = FederationType.national.apiValue;
+        break;
+    }
+    
+    if (filterType != null) {
+      _currentFilterType = filterType;
+      
+      addFederationBloc.add(
+        GetFederationsRequested(
+          federationType: filterType,
+          page: 1,
+          search: _searchController.text.isEmpty ? null : _searchController.text,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        width: 600,
-        constraints: const BoxConstraints(maxHeight: 600),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildHeader(),
-            _buildSearchField(),
-            Expanded(child: _buildFederationsList()),
-            _buildActions(),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => FederationMemberBloc(
+            federationRepo: GetIt.instance<FederationRepo>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => addFederationBloc
+        ),
+      ],
+      child: Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: 600,
+          constraints: const BoxConstraints(maxHeight: 600),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(),
+              _buildSearchField(),
+              Expanded(child: _buildFederationsList()),
+              _buildActions(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeader() {
+    // Determine header text based on federation type
+    String headerText = 'Add Federation';
+    if (widget.federationType != null) {
+      final isInternationalOrContinental = 
+          widget.federationType!.toLowerCase() == 'international' ||
+          widget.federationType!.toLowerCase() == 'continental';
+      headerText = isInternationalOrContinental 
+          ? 'Add Federation Members' 
+          : 'Add Affiliations';
+    }
+    
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 24, 16, 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Add Federation', style: AppTextStyles.subHeading1),
+          Text(headerText, style: AppTextStyles.subHeading1),
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Container(
@@ -106,46 +194,90 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
   }
 
   Widget _buildFederationsList() {
-    return ValueListenableBuilder<String>(
-      valueListenable: _searchQueryNotifier,
-      builder: (context, searchQuery, child) {
-        final filteredFederations = _federations.where((Map<String, Object> federation) {
-          final String name = federation['name'] as String? ?? '';
-          return name.toLowerCase().contains(searchQuery.toLowerCase());
-        }).toList();
+    return BlocBuilder<AddFederationBloc, AddFederationState>(
+      builder: (context, state) {
+        if (state is FederationsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is FederationsSuccess) {
+          return ValueListenableBuilder<String>(
+            valueListenable: _searchQueryNotifier,
+            builder: (context, searchQuery, child) {
+              // Filter out existing members first, then apply search filter
+              final availableFederations = state.federations.where((federation) {
+                // Exclude federations that are already members
+                if (widget.currentMemberIds != null && widget.currentMemberIds!.contains(federation.id)) {
+                  return false;
+                }
+                
+                // Apply search filter
+                final name = federation.name ?? '';
+                return name.toLowerCase().contains(searchQuery.toLowerCase());
+              }).toList();
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemCount: filteredFederations.length,
-            separatorBuilder: (context, index) => 16.verticalSpace,
-            itemBuilder: (context, index) {
-              final federation = filteredFederations[index];
-              return _buildFederationItem(federation);
+              if (availableFederations.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No federations found',
+                    style: AppTextStyles.body1.copyWith(
+                      color: AppColors.neutral600,
+                    ),
+                  ),
+                );
+              }
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: ListView.separated(
+                  controller: _scrollController,
+                  shrinkWrap: true,
+                  itemCount: availableFederations.length + (state.isLoadingMore ? 1 : 0),
+                  separatorBuilder: (context, index) => 16.verticalSpace,
+                  itemBuilder: (context, index) {
+                    if (index >= availableFederations.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    final federation = availableFederations[index];
+                    return _buildFederationItem(federation);
+                  },
+                ),
+              );
             },
-          ),
-        );
+          );
+        } else if (state is FederationsError) {
+          return Center(
+            child: Text(
+              state.message,
+              style: AppTextStyles.body1.copyWith(
+                color: AppColors.negativeColor,
+              ),
+            ),
+          );
+        }
+        return const SizedBox();
       },
     );
   }
 
-  Widget _buildFederationItem(Map<String, Object> federation) {
-    return ValueListenableBuilder<List<String>>(
+  Widget _buildFederationItem(FederationModel federation) {
+    return ValueListenableBuilder<List<FederationModel>>(
       valueListenable: _selectedFederationsNotifier,
       builder: (context, selectedFederations, child) {
-        final String federationName = federation['name'] as String? ?? '';
-        final isSelected = selectedFederations.contains(federationName);
+        final isSelected = selectedFederations.any((f) => f.id == federation.id);
 
         return GestureDetector(
           onTap: () {
-            final currentSelected = List<String>.from(
+            final currentSelected = List<FederationModel>.from(
               _selectedFederationsNotifier.value,
             );
             if (isSelected) {
-              currentSelected.remove(federationName);
+              currentSelected.removeWhere((f) => f.id == federation.id);
             } else {
-              currentSelected.add(federationName);
+              currentSelected.add(federation);
             }
             _selectedFederationsNotifier.value = currentSelected;
           },
@@ -165,23 +297,14 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: CachedNetworkImage(
-                    imageUrl: AppConstants.dummyImageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                FederationLogoWidget(federationId: federation.id!,size: 48,),
                 16.horizontalSpace,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        federationName,
+                        federation.name!,
                         style: AppTextStyles.subHeading2.copyWith(
                           color: isSelected
                               ? AppColors.primaryColor
@@ -191,7 +314,7 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
                       ),
                       4.verticalSpace,
                       Text(
-                        'National',
+                        federation.type.displayName,
                         style: AppTextStyles.body2.copyWith(
                           color: AppColors.neutral600,
                         ),
@@ -224,24 +347,50 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
               child: CustomButton(
                 title: 'Cancel',
                 isSecondaryBtn: true,
-                onTap: () => Navigator.of(context).pop(),
+                onTap: () => context.pop(false),
               ),
             ),
           ),
           16.horizontalSpace,
           Expanded(
-            child: ValueListenableBuilder<List<String>>(
-              valueListenable: _selectedFederationsNotifier,
-              builder: (context, selectedFederations, child) {
-                return SizedBox(
-                  height: 48,
-                  child: CustomButton(
-                    title: 'Add Federations (${selectedFederations.length})',
-
-                    onTap: selectedFederations.isNotEmpty
-                        ? () => widget.onFederationsSelected?.call(selectedFederations)
-                        : null,
-                  ),
+            child: BlocConsumer<FederationMemberBloc, FederationMemberState>(
+              listener: (context, state) {
+                if (state is MembersAdded) {
+                  context.pop(true);
+                 SnackbarUtils.showCustomToast(context, state.message);
+                } else if (state is MembersAddedError) {
+                  SnackbarUtils.showCustomToast(context, state.message);
+                }
+              },
+              builder: (context, state) {
+                return ValueListenableBuilder<List<FederationModel>>(
+                  valueListenable: _selectedFederationsNotifier,
+                  builder: (context, selectedFederations, child) {
+                    final isLoading = state is MembersAdding;
+                    return SizedBox(
+                      height: 48,
+                      child: CustomButton(
+                        title: 'Add Federations (${selectedFederations.length})',
+                        isLoading: isLoading,
+                        onTap: selectedFederations.isNotEmpty && !isLoading
+                            ? () {
+                                if (widget.federationId != null && widget.federationType != null) {
+                                  final memberIds = selectedFederations.map((fed) => fed.id!).toList();
+                                  context.read<FederationMemberBloc>().add(
+                                    AddFederationMembers(
+                                      federationId: widget.federationId!,
+                                      federationType: widget.federationType!,
+                                      memberIds: memberIds,
+                                    ),
+                                  );
+                                } else {
+                                  widget.onFederationsSelected?.call(selectedFederations);
+                                }
+                              }
+                            : null,
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -256,6 +405,7 @@ class _AddFederationDialogState extends State<AddFederationDialog> {
     _searchQueryNotifier.dispose();
     _selectedFederationsNotifier.dispose();
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 }

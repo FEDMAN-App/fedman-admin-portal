@@ -5,13 +5,15 @@ import '../../country_and_its_cities/data/models/country_and_its_cities.dart';
 
 class DocumentFile {
   final String name;
-  final DropzoneFileInterface file;
+  final DropzoneFileInterface? file; // Optional for existing documents
   final String id;
+  final String? url; // For existing documents with URL
 
   DocumentFile({
     required this.name,
-    required this.file,
+    this.file,
     required this.id,
+    this.url,
   });
 }
 
@@ -26,11 +28,12 @@ mixin FederationFormMixin<T extends StatefulWidget> on State<T> {
   final ValueNotifier<CountryAndItsCities?> selectedCountryNotifier = ValueNotifier(null);
   final ValueNotifier<String?> selectedCityNotifier = ValueNotifier(null);
   final ValueNotifier<bool> hasLogoNotifier = ValueNotifier(false);
-  final ValueNotifier<bool> hasDocumentsNotifier = ValueNotifier(false);
+
   
   // File upload properties
   String? logoFileName;
   String? logoFileUrl;
+  String? signedLogoFileUrl;
   DropzoneFileInterface? logoFile;
   
   // Multiple documents support
@@ -53,7 +56,7 @@ mixin FederationFormMixin<T extends StatefulWidget> on State<T> {
     selectedCountryNotifier.dispose();
     selectedCityNotifier.dispose();
     hasLogoNotifier.dispose();
-    hasDocumentsNotifier.dispose();
+
     selectedDocumentsNotifier.dispose();
     
     super.dispose();
@@ -67,7 +70,7 @@ mixin FederationFormMixin<T extends StatefulWidget> on State<T> {
     selectedCountryNotifier.value = null;
     selectedCityNotifier.value = null;
     hasLogoNotifier.value = false;
-    hasDocumentsNotifier.value = false;
+
     logoFileName = null;
     logoFile = null;
     logoFileUrl = null;

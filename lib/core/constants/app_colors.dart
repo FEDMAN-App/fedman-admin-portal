@@ -29,6 +29,8 @@ class AppColors {
   static const Color tertiary50 = Color(0XFFEBEFFF);
   static const Color positiveColor = Color(0XFF27BE69);
   static const Color negativeColor = Color(0XFFF2415A);
+  static const Color negativeBase = Color(0XFFF2415A);
+  static const Color dashboardPurple = Color(0XFFBF67FF);
   static const Color negative100 = Color(0XFFFCD9DE);
   static const Color warningColor = Color(0XFFFFBF0F);
   static const Color infoColor = Color(0XFF295BFF);
@@ -37,6 +39,7 @@ class AppColors {
   static const Color neutralBase = Color(0XFF938C8C);
   static const Color neutralBlack = Color(0XFF0C092A);
   static const Color neutral800 = Color(0XFF3F3333);
+  static const Color typographyLightBase = Color(0XFF2B2E48);
   static const Color neutral700 = Color(0XFF4B4040);
   static const Color neutral900 = Color(0XFF271A1A);
   static const Color neutral600 = Color(0XFF6F6666);

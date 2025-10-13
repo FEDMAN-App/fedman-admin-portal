@@ -13,6 +13,7 @@ class AppAssets {
   static const String downloadIcon = 'assets/images/download_icon.svg';
   static const String editIcon = 'assets/images/edit_icon.svg';
   static const String deactivateIcon = 'assets/images/deactivate_icon.svg';
+  static const String deleteIcon = 'assets/images/delete_icon.svg';
   static const String bellIcon = 'assets/images/bell_icon.svg';
 
   // Navigation Icons

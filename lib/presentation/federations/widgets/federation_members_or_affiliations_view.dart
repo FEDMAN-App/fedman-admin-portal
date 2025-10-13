@@ -1,14 +1,16 @@
 import 'package:fedman_admin_app/core/constants/app_assets.dart';
+import 'package:fedman_admin_app/core/utils/format_date.dart';
+import 'package:fedman_admin_app/presentation/federations/data/enums/federation_types.dart';
+import 'package:fedman_admin_app/presentation/federations/data/models/federation_member_model.dart';
 import 'package:fedman_admin_app/presentation/federations/widgets/add_federation_dialog.dart';
+import 'package:fedman_admin_app/presentation/federations/widgets/federation_logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../core/common_widgets/custom_buttons.dart';
-import '../../../core/common_widgets/custom_cached_image_widget.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/responsive_helper.dart';
@@ -16,27 +18,28 @@ import '../bloc/federation_member_bloc/federation_member_bloc.dart';
 import '../data/models/federation_model.dart';
 import '../data/repositories/federation_repo.dart';
 
-class LinkedInternationalFederationMembers extends StatefulWidget {
+class FederationMembersOrAffiliationsView extends StatefulWidget {
   final FederationModel federationModel;
 
-  const LinkedInternationalFederationMembers({
+  const FederationMembersOrAffiliationsView({
     super.key,
     required this.federationModel,
   });
 
   @override
-  State<LinkedInternationalFederationMembers> createState() =>
-      _LinkedInternationalFederationMembersState();
+  State<FederationMembersOrAffiliationsView> createState() =>
+      _FederationMembersOrAffiliationsViewState();
 }
 
-class _LinkedInternationalFederationMembersState
-    extends State<LinkedInternationalFederationMembers> {
+class _FederationMembersOrAffiliationsViewState
+    extends State<FederationMembersOrAffiliationsView> {
+  final federationMemberBloc =  FederationMemberBloc(federationRepo: GetIt.instance<FederationRepo>());
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          FederationMemberBloc(federationRepo: GetIt.instance<FederationRepo>())
-            ..add(
+
+      federationMemberBloc..add(
               GetFederationMembers(
                 federationId: widget.federationModel.id!,
                 federationType: widget.federationModel.type.displayName,
@@ -78,15 +81,23 @@ class _LinkedInternationalFederationMembersState
   }
 
   Widget _buildMembersList() {
-    return BlocBuilder<FederationMemberBloc, FederationMemberState>(
+    return BlocConsumer<FederationMemberBloc, FederationMemberState>(
+      listener: (context, state) {
+
+      },
       builder: (context, state) {
         if (state is MembersLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is MembersLoaded) {
           if (state.members.isEmpty) {
+            final isInternationalOrContinental =
+                widget.federationModel.type == FederationType.international ||
+                widget.federationModel.type == FederationType.continental;
             return Center(
               child: Text(
-                'No members found',
+                isInternationalOrContinental
+                    ? 'No members found'
+                    : 'No affiliations found',
                 style: AppTextStyles.body1.copyWith(
                   color: AppColors.neutral600,
                 ),
@@ -113,7 +124,7 @@ class _LinkedInternationalFederationMembersState
     );
   }
 
-  Widget _buildMemberCard(FederationModel memberData) {
+  Widget _buildMemberCard(FederationMemberModel memberData) {
     final isMobile = ResponsiveHelper.isMobile(context);
 
     return Container(
@@ -128,15 +139,7 @@ class _LinkedInternationalFederationMembersState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Logo
-          Container(
-            width: 60,
-            height: 60,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(shape: BoxShape.circle),
-            child: CustomCachedImageWidget(
-              url: memberData.fedLogo ?? AppConstants.dummyImageUrl,
-            ),
-          ),
+          FederationLogoWidget(federationId: memberData.id!, size: 60),
           16.horizontalSpace,
           // Federation Info
           Expanded(
@@ -176,7 +179,11 @@ class _LinkedInternationalFederationMembersState
                     ),
                     4.horizontalSpace,
                     Text(
-                      memberData.createdDate ?? 'Unknown Date',
+                      formatDate(
+                            DateTime.tryParse(memberData.joinedAt ?? ""),
+                            'MMM dd, yyyy',
+                          ) ??
+                          'Unknown Date',
                       style: AppTextStyles.body2.copyWith(
                         color: AppColors.neutral600,
                       ),
@@ -195,11 +202,11 @@ class _LinkedInternationalFederationMembersState
     );
   }
 
-  Widget _buildExpiryBadge(FederationModel memberData) {
+  Widget _buildExpiryBadge(FederationMemberModel memberData) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: (memberData.status ?? 'active') != "active"
+        color: (true ?? 'active') != "active"
             ? AppColors.negative100
             : AppColors.tertiary50,
         borderRadius: BorderRadius.circular(6),
@@ -210,17 +217,17 @@ class _LinkedInternationalFederationMembersState
           Icon(
             Icons.calendar_today,
             size: 16,
-            color: (memberData.status ?? 'active') != "active"
+            color: (true ?? 'active') != "active"
                 ? AppColors.negativeColor
                 : AppColors.infoColor,
           ),
           4.horizontalSpace,
           Text(
-            (memberData.status ?? 'active') != "active"
-                ? 'Expired ${memberData.createdDate ?? 'Unknown Date'}'
-                : 'Expire at: ${memberData.createdDate ?? 'Unknown Date'}',
+            (true ?? 'active') != "active"
+                ? 'Expired May 03, 2025'
+                : 'Expire at: May 03, 2025}',
             style: AppTextStyles.body2.copyWith(
-              color: (memberData.status ?? 'active') != "active"
+              color: (true ?? 'active') != "active"
                   ? AppColors.negativeColor
                   : AppColors.infoColor,
               fontWeight: FontWeight.w500,
@@ -231,8 +238,30 @@ class _LinkedInternationalFederationMembersState
     );
   }
 
-  void _addFederations() {
-    showDialog(context: context, builder: (context) => AddFederationDialog());
+  void _addFederations() async {
+    // Get current member IDs from the bloc state
+    final currentState = federationMemberBloc.state;
+    List<int>? currentMemberIds;
+    if (currentState is MembersLoaded) {
+      currentMemberIds = currentState.members.map((member) => member.id).toList();
+    }
+    
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AddFederationDialog(
+        federationId: widget.federationModel.id,
+        federationType: widget.federationModel.type.displayName,
+        currentMemberIds: currentMemberIds,
+      ),
+    );
+    if(result != null && result){
+      federationMemberBloc.add(
+        GetFederationMembers(
+          federationId: widget.federationModel.id!,
+          federationType: widget.federationModel.type.displayName,
+        ),
+      );
+    }
   }
 }
 

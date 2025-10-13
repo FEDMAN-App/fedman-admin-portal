@@ -36,7 +36,7 @@ Example:
 static const String myIcon = 'assets/images/my_icon.svg';
 
 // In your widget
-import 'package:fedman_admin/core/constants/app_assets.dart';
+import 'package:fedman_admin_app/core/constants/app_assets.dart';
 
 SvgPicture.asset(AppAssets.myIcon)
 ```
@@ -54,6 +54,73 @@ CustomCachedImageWidget(
   width: 100,
   height: 100,
 )
+```
+
+## Responsiveness Guidelines
+
+Always use `@lib/core/utils/responsive_helper.dart` for handling different screen sizes and responsive layouts.
+
+**Available methods:**
+- `ResponsiveHelper.isMobile(context)` - Check if device is mobile (< 600px)
+- `ResponsiveHelper.isTablet(context)` - Check if device is tablet (600px - 1200px)
+- `ResponsiveHelper.isDesktop(context)` - Check if device is desktop (>= 1200px)
+- `ResponsiveHelper.getDeviceType(context)` - Returns DeviceType enum
+
+
+
+
+## Responsive Layout Widgets
+
+Use `@lib/core/common_widgets/responsive_row_column.dart` for responsive Row/Column layouts that automatically switch based on screen size.
+
+**ResponsiveRowColumn:** Automatically switches between Row and Column based on screen size and layout configuration.
+
+**Available layouts:**
+- `ResponsiveLayout.mobileColumn` - Column on mobile, Row on tablet/desktop
+- `ResponsiveLayout.tabletColumn` - Column on mobile/tablet, Row on desktop only
+- `ResponsiveLayout.mobileTabletColumn` - Column on mobile/tablet, Row on desktop
+- `ResponsiveLayout.alwaysColumn` - Always use Column
+- `ResponsiveLayout.alwaysRow` - Always use Row
+
+**Key features:**
+- Separate alignment properties for Row and Column modes
+- Automatic spacing between children
+- Optional Expanded wrapping with custom flex values
+- Automatic filtering of empty SizedBox widgets
+
+Example usage:
+```dart
+ResponsiveRowColumn(
+  layout: ResponsiveLayout.mobileColumn,
+  spacing: 16,
+  wrapInExpanded: true,
+  flexValues: [2, 1, 1], // Custom flex ratios
+  rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
+  columnMainAxisAlignment: MainAxisAlignment.start,
+  rowCrossAxisAlignment: CrossAxisAlignment.center,
+  columnCrossAxisAlignment: CrossAxisAlignment.stretch,
+  children: [
+    Card1(),
+    Card2(),
+    Card3(),
+  ],
+),
+```
+
+**ResponsiveWrap:** Switches between Wrap and Row/Column based on screen size.
+
+```dart
+ResponsiveWrap(
+  wrapAt: ResponsiveLayout.mobileColumn,
+  spacing: 8,
+  runSpacing: 8,
+  alignment: WrapAlignment.spaceBetween,
+  children: [
+    Chip(label: Text('Tag 1')),
+    Chip(label: Text('Tag 2')),
+    Chip(label: Text('Tag 3')),
+  ],
+),
 ```
 
 ## Dependency Injection Guidelines

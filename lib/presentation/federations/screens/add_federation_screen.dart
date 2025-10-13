@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fedman_admin_app/core/common_widgets/common_widgets_barrel.dart';
 import 'package:fedman_admin_app/core/navigation/route_name.dart';
 import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
@@ -17,11 +15,11 @@ import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/file_validation_utils.dart';
 import '../../country_and_its_cities/bloc/country_bloc.dart';
-import '../../country_and_its_cities/data/countries_repo.dart';
 import '../../country_and_its_cities/data/models/country_and_its_cities.dart';
 import '../../country_and_its_cities/widgets/city_dropdown_view.dart';
 import '../../country_and_its_cities/widgets/country_drop_down_view.dart';
 import '../bloc/add_federation_bloc/add_federation_bloc.dart';
+import '../bloc/federation_logo_bloc/federation_logo_bloc.dart';
 import '../data/enums/federation_types.dart';
 import '../data/models/federation_model.dart';
 import '../data/repositories/federation_repo.dart';
@@ -33,8 +31,13 @@ import '../widgets/selected_documents_widget.dart';
 
 class AddFederationScreen extends StatefulWidget {
   final int? federationId;
+  final bool comingFromFederationDetailsScreen;
 
-  const AddFederationScreen({super.key, this.federationId});
+  const AddFederationScreen({
+    super.key,
+    this.federationId,
+    this.comingFromFederationDetailsScreen = false,
+  });
 
   @override
   State<AddFederationScreen> createState() => _AddFederationScreenState();
@@ -48,12 +51,19 @@ class _AddFederationScreenState extends State<AddFederationScreen>
   bool _logoUploadCompleted = false;
   bool _documentsUploadCompleted = false;
   bool _hasDocumentsToUpload = false;
-  int? _createdFederationId;
-late AddFederationBloc _bloc;
+
+  late AddFederationBloc _bloc;
+  late CountryBloc _countryBloc;
+  late FederationLogoBloc _federationLogoBloc;
+
   @override
   void initState() {
     super.initState();
-    _bloc=AddFederationBloc(federationRepo: GetIt.I<FederationRepo>());
+    _bloc = AddFederationBloc(federationRepo: GetIt.I<FederationRepo>());
+    _countryBloc = CountryBloc(GetIt.I.get());
+    _federationLogoBloc = FederationLogoBloc(
+      federationRepo: GetIt.I<FederationRepo>(),
+    );
     if (isEditing) {
       _bloc.add(
         LoadFederationForEditRequested(federationId: widget.federationId!),
@@ -65,86 +75,105 @@ late AddFederationBloc _bloc;
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => CountryBloc(GetIt.I<CountryRepo>())),
-        BlocProvider(
-          create: (context) => _bloc,
-        ),
+        BlocProvider(create: (context) => _countryBloc),
+        BlocProvider(create: (context) => _bloc),
+        BlocProvider(create: (context) => _federationLogoBloc),
       ],
-      child: BlocListener<AddFederationBloc, AddFederationState>(
-        listener: (context, state) {
-          if (state is AddFederationLoaded) {
-            _populateFormWithFederation(state.federation);
-          } else if (state is AddFederationSuccess) {
-            SnackbarUtils.showCustomToast(
-              context,
-              state.message,
-              isError: false,
-            );
-            if (state.isUpdate) {
-              context.go(RouteName.federations);
-            } else {
-              // Store federation ID and prepare upload tracking
-              _createdFederationId = state.federation.id!;
-              _hasDocumentsToUpload = selectedDocumentsNotifier.value.isNotEmpty;
-              _logoUploadCompleted = false;
-              _documentsUploadCompleted =
-                  !_hasDocumentsToUpload; // If no documents, mark as completed
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AddFederationBloc, AddFederationState>(
+            listener: (context, state) {
+              if (state is AddFederationLoaded) {
+                _populateFormWithFederation(state.federation);
+              } else if (state is AddFederationSuccess) {
+                SnackbarUtils.showCustomToast(
+                  context,
+                  state.message,
+                  isError: false,
+                );
 
-              // Upload logo and documents after successful federation creation
-              _uploadFilesAfterCreation(context, state.federation.id!);
-            }
-          } else if (state is AddFederationError) {
-            SnackbarUtils.showCustomToast(
-              context,
-              state.message,
-              isError: true,
-            );
-          } else if (state is FileUploadSuccess) {
+                // Store federation ID and prepare upload tracking
 
+                _hasDocumentsToUpload =
+                    selectedDocumentsNotifier.value.isNotEmpty;
+                _logoUploadCompleted = false;
+                _documentsUploadCompleted =
+                    !_hasDocumentsToUpload; // If no documents, mark as completed
 
-            SnackbarUtils.showCustomToast(
-              context,
-              state.message,
-              isError: false,
-            );
+                // Upload logo and documents after successful federation creation
+                _uploadFilesAfterCreation(context, state.federation.id!);
 
-            // Track upload completion
-            if (state.fileType == 'logo') {
-              _logoUploadCompleted = true;
-            } else if (state.fileType == 'documents') {
-              _documentsUploadCompleted = true;
-            }
+                if (logoFile == null && isEditing) {
+                  // logo is not updated on editing mode
+                  navigateBackToCorrectScreen(context);
+                }
+              } else if (state is AddFederationError) {
+                SnackbarUtils.showCustomToast(
+                  context,
+                  state.message,
+                  isError: true,
+                );
+              } else if (state is FileUploadSuccess) {
+                SnackbarUtils.showCustomToast(
+                  context,
+                  state.message,
+                  isError: false,
+                );
 
-            // Show dialog when all uploads are complete
-            if (_logoUploadCompleted && _documentsUploadCompleted) {
-              showDialog(
-                context: context,
-                builder: (context) => FederationAddedSuccessfullyDialogWidget(),
-              );
-            }
-          } else if (state is FileUploadError) {
-            SnackbarUtils.showCustomToast(
-              context,
-              state.message,
-              isError: true,
-            );
+                // Track upload completion
+                if (state.fileType == 'logo') {
+                  _logoUploadCompleted = true;
+                } else if (state.fileType == 'documents') {
+                  _documentsUploadCompleted = true;
+                }
 
-            // Mark failed uploads as completed to stop loading
-            if (state.fileType == 'logo') {
-              _logoUploadCompleted = true;
-            } else if (state.fileType == 'documents') {
-              _documentsUploadCompleted = true;
-            }
+                // Show dialog when all uploads are complete
+                if (_logoUploadCompleted && _documentsUploadCompleted) {
+                  if (isEditing) {
+                    navigateBackToCorrectScreen(context);
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          FederationAddedSuccessfullyDialogWidget(),
+                    );
+                  }
+                }
+              } else if (state is FileUploadError) {
+                SnackbarUtils.showCustomToast(
+                  context,
+                  state.message,
+                  isError: true,
+                );
 
-            // Show dialog even if uploads failed (federation was created successfully)
-            if (_logoUploadCompleted && _documentsUploadCompleted) {
-              showDialog(
-                context: context,
-                builder: (context) => FederationAddedSuccessfullyDialogWidget(),
-              );
-            }
-          }
-        },
+                // Mark failed uploads as completed to stop loading
+                if (state.fileType == 'logo') {
+                  _logoUploadCompleted = true;
+                } else if (state.fileType == 'documents') {
+                  _documentsUploadCompleted = true;
+                }
+
+                // Show dialog even if uploads failed (federation was created successfully)
+                if (_logoUploadCompleted && _documentsUploadCompleted) {
+                  showDialog(
+                    context: context,
+                    builder: (context) =>
+                        FederationAddedSuccessfullyDialogWidget(),
+                  );
+                }
+              }
+            },
+          ),
+          BlocListener<FederationLogoBloc, FederationLogoState>(
+            listener: (context, state) {
+              if (state is FederationLogoLoaded) {
+                signedLogoFileUrl = state.logoUrl;
+                // Trigger a rebuild to show the logo preview
+                hasLogoNotifier.value = true;
+              }
+            },
+          ),
+        ],
         child: ScreenBody(
           child: Padding(
             padding: EdgeInsets.all(24),
@@ -179,6 +208,7 @@ late AddFederationBloc _bloc;
                           valueListenable: selectedTypeNotifier,
                           builder: (context, selectedType, child) {
                             return FederationTypeSelector(
+                              editingMode: isEditing,
                               selectedType: selectedType,
                               onTypeSelected: (type) {
                                 selectedTypeNotifier.value = type;
@@ -274,7 +304,9 @@ late AddFederationBloc _bloc;
                               description:
                                   'PNG, JPG up to 5MB. Recommended size: 500x500px. Drag and drop supported on web.',
                               fileName: logoFileName,
-                              fileUrl: logoFileUrl,
+                              fileUrl: logoFile != null
+                                  ? logoFileUrl
+                                  : signedLogoFileUrl ?? logoFileUrl,
                               isLogo: true,
                               onTap: _handleLogoUpload,
                               onDropFile: kIsWeb ? _handleLogoDrop : null,
@@ -286,29 +318,38 @@ late AddFederationBloc _bloc;
                           },
                         ),
                         24.verticalSpace,
-                        FileUploadWidget(
-                          title: 'Federation Documents (optional)',
-                          description:
-                              'Upload statutes, rules, and other federation documents (PDF). Select multiple files. Drag and drop supported on web.',
-                          fileName: null, // We don't show filename in the upload widget anymore
-                          isLogo: false,
-                          onTap: _handleDocumentsUpload,
-                          onDropFile: kIsWeb ? _handleDocumentsDrop : null,
-                          onControllerCreated: kIsWeb
-                              ? (controller) =>
-                                    documentsDropzoneController = controller
-                              : null,
-                        ),
+                        isEditing
+                            ? SizedBox()
+                            : FileUploadWidget(
+                                title: 'Federation Documents (optional)',
+                                description:
+                                    'Upload statutes, rules, and other federation documents (PDF). Select multiple files. Drag and drop supported on web.',
+                                fileName: null,
+                                // We don't show filename in the upload widget anymore
+                                isLogo: false,
+                                onTap: _handleDocumentsUpload,
+                                onDropFile: kIsWeb
+                                    ? _handleDocumentsDrop
+                                    : null,
+                                onControllerCreated: kIsWeb
+                                    ? (controller) =>
+                                          documentsDropzoneController =
+                                              controller
+                                    : null,
+                              ),
                         12.verticalSpace,
-                        ValueListenableBuilder<List<DocumentFile>>(
-                          valueListenable: selectedDocumentsNotifier,
-                          builder: (context, documents, child) {
-                            return SelectedDocumentsWidget(
-                              documents: documents,
-                              onRemove: _removeDocument,
-                            );
-                          },
-                        ),
+
+                        isEditing
+                            ? SizedBox()
+                            : ValueListenableBuilder<List<DocumentFile>>(
+                                valueListenable: selectedDocumentsNotifier,
+                                builder: (context, documents, child) {
+                                  return SelectedDocumentsWidget(
+                                    documents: documents,
+                                    onRemove: _removeDocument,
+                                  );
+                                },
+                              ),
                         32.verticalSpace,
                       ],
                     ),
@@ -405,7 +446,7 @@ late AddFederationBloc _bloc;
       );
       if (documentFiles.isNotEmpty) {
         final List<DocumentFile> validDocuments = [];
-        
+
         for (final file in documentFiles) {
           final fileName = file.name;
           final mimeType = await documentsDropzoneController!.getFileMIME(file);
@@ -434,18 +475,21 @@ late AddFederationBloc _bloc;
           }
 
           // Add valid document
-          validDocuments.add(DocumentFile(
-            name: fileName,
-            file: file,
-            id: DateTime.now().millisecondsSinceEpoch.toString() + fileName,
-          ));
+          validDocuments.add(
+            DocumentFile(
+              name: fileName,
+              file: file,
+              id: DateTime.now().millisecondsSinceEpoch.toString() + fileName,
+            ),
+          );
         }
-        
+
         if (validDocuments.isNotEmpty) {
-          final currentDocuments = List<DocumentFile>.from(selectedDocumentsNotifier.value);
+          final currentDocuments = List<DocumentFile>.from(
+            selectedDocumentsNotifier.value,
+          );
           currentDocuments.addAll(validDocuments);
           selectedDocumentsNotifier.value = currentDocuments;
-          hasDocumentsNotifier.value = currentDocuments.isNotEmpty;
         }
       }
     } else {}
@@ -517,18 +561,20 @@ late AddFederationBloc _bloc;
       file: file,
       id: DateTime.now().millisecondsSinceEpoch.toString() + fileName,
     );
-    
-    final currentDocuments = List<DocumentFile>.from(selectedDocumentsNotifier.value);
+
+    final currentDocuments = List<DocumentFile>.from(
+      selectedDocumentsNotifier.value,
+    );
     currentDocuments.add(newDocument);
     selectedDocumentsNotifier.value = currentDocuments;
-    hasDocumentsNotifier.value = currentDocuments.isNotEmpty;
   }
 
   void _removeDocument(String documentId) {
-    final currentDocuments = List<DocumentFile>.from(selectedDocumentsNotifier.value);
+    final currentDocuments = List<DocumentFile>.from(
+      selectedDocumentsNotifier.value,
+    );
     currentDocuments.removeWhere((doc) => doc.id == documentId);
     selectedDocumentsNotifier.value = currentDocuments;
-    hasDocumentsNotifier.value = currentDocuments.isNotEmpty;
   }
 
   void _handleCancel() {
@@ -550,12 +596,29 @@ late AddFederationBloc _bloc;
         cities: federation.city.isNotEmpty ? [federation.city] : [],
       );
       selectedCountryNotifier.value = country;
-      context.read<CountryBloc>().countrySelected(country);
+      _countryBloc.countrySelected(country);
     }
 
     // Set city if available
     if (federation.city.isNotEmpty) {
       selectedCityNotifier.value = federation.city;
+    }
+
+    // Handle logo - extract filename and fetch signed URL
+    if (federation.fedLogo != null && federation.fedLogo!.isNotEmpty) {
+      // Extract filename from URL or use a default
+      final uri = Uri.tryParse(federation.fedLogo!);
+      if (uri != null && uri.pathSegments.isNotEmpty) {
+        logoFileName = uri.pathSegments.last;
+        logoFileUrl = federation.fedLogo;
+      } else {
+        logoFileName = 'federation_logo.png';
+      }
+
+      // Fetch signed URL using FederationLogoBloc
+      _federationLogoBloc.add(
+        GetFederationLogoRequested(federationId: federation.id!),
+      );
     }
   }
 
@@ -575,10 +638,10 @@ late AddFederationBloc _bloc;
       streetAddress: streetAddressController.text.trim(),
       postCode: postCodeController.text.trim(),
       fedLogo: logoFileUrl,
-      memberFederationIdsWhenCreation: context
+      memberFederationIds: context
           .read<AddFederationBloc>()
           .memberFederationIds,
-      parentFederationIdsWhenCreation: context
+      parentFederationIds: context
           .read<AddFederationBloc>()
           .parentFederationIds,
     );
@@ -624,19 +687,21 @@ late AddFederationBloc _bloc;
       }
     }
 
-    // Upload documents if available
-    final documents = selectedDocumentsNotifier.value;
+    // Upload documents if available (only new documents with file property)
+    final documents = selectedDocumentsNotifier.value
+        .where((doc) => doc.file != null)
+        .toList();
     if (documents.isNotEmpty && documentsDropzoneController != null) {
       try {
         final List<({Uint8List bytes, String? fileName})> documentData = [];
-        
+
         for (final document in documents) {
           final documentsBytes = await documentsDropzoneController!.getFileData(
-            document.file,
+            document.file!,
           );
           documentData.add((bytes: documentsBytes, fileName: document.name));
         }
-        
+
         if (context.mounted && documentData.isNotEmpty) {
           context.read<AddFederationBloc>().add(
             UploadMultipleFederationDocumentsRequested(
@@ -657,5 +722,11 @@ late AddFederationBloc _bloc;
     }
   }
 
-  // dispose method is handled by the mixin
+  void navigateBackToCorrectScreen(BuildContext context) {
+    if (widget.comingFromFederationDetailsScreen) {
+      context.go("/federations/${widget.federationId}");
+    } else {
+      context.go(RouteName.federations);
+    }
+  }
 }
