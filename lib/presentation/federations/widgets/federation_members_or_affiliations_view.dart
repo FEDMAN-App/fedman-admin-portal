@@ -1,7 +1,9 @@
 import 'package:fedman_admin_app/core/constants/app_assets.dart';
 import 'package:fedman_admin_app/presentation/federations/widgets/add_federation_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../core/common_widgets/custom_buttons.dart';
 import '../../../core/common_widgets/custom_cached_image_widget.dart';
@@ -10,11 +12,17 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/space.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../bloc/federation_member_bloc/federation_member_bloc.dart';
 import '../data/models/federation_model.dart';
-import '../data/enums/federation_types.dart';
+import '../data/repositories/federation_repo.dart';
 
 class LinkedInternationalFederationMembers extends StatefulWidget {
-  const LinkedInternationalFederationMembers({super.key});
+  final FederationModel federationModel;
+
+  const LinkedInternationalFederationMembers({
+    super.key,
+    required this.federationModel,
+  });
 
   @override
   State<LinkedInternationalFederationMembers> createState() =>
@@ -23,70 +31,21 @@ class LinkedInternationalFederationMembers extends StatefulWidget {
 
 class _LinkedInternationalFederationMembersState
     extends State<LinkedInternationalFederationMembers> {
-  final List<FederationModel> _members = [
-    FederationModel(
-      id: 0,
-      name: 'European Equestrian Federation',
-      type: FederationType.international,
-      country: 'New York',
-      city: 'New York',
-      streetAddress: '123 Main St',
-      postCode: '10001',
-      createdDate: '1/15/2024',
-      fedLogo: AppConstants.dummyImageUrl,
-      status: 'active',
-      updatedAt: '1/15/2024',
-    ),
-    FederationModel(
-      id: 1,
-      name: 'American Horse Association',
-      type: FederationType.national,
-      country: 'United States',
-      city: 'Los Angeles',
-      streetAddress: '456 Oak Ave',
-      postCode: '90210',
-      createdDate: '1/15/2024',
-      fedLogo: AppConstants.dummyImageUrl,
-      status: 'active',
-      updatedAt: '1/15/2024',
-    ),
-    FederationModel(
-      id: 3,
-      name: 'British Dressage Federation',
-      type: FederationType.international,
-      country: 'United Kingdom',
-      city: 'Sunnyvale',
-      streetAddress: '789 Pine Rd',
-      postCode: 'SW1A 1AA',
-      createdDate: '1/15/2024',
-      fedLogo: AppConstants.dummyImageUrl,
-      status: 'active',
-      updatedAt: '1/15/2024',
-    ),
-    FederationModel(
-      id: 4,
-      name: 'Australian Equestrian Federation',
-      type: FederationType.international,
-      country: 'Australia',
-      city: 'California',
-      streetAddress: '321 Elm St',
-      postCode: '2000',
-      createdDate: '1/15/2024',
-      fedLogo: AppConstants.dummyImageUrl,
-      status: 'active',
-      updatedAt: '1/15/2024',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(),
-        24.verticalSpace,
-        _buildMembersList(),
-      ],
+    return BlocProvider(
+      create: (context) =>
+          FederationMemberBloc(federationRepo: GetIt.instance<FederationRepo>())
+            ..add(
+              GetFederationMembers(
+                federationId: widget.federationModel.id!,
+                federationType: widget.federationModel.type.displayName,
+              ),
+            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [_buildHeader(), 24.verticalSpace, _buildMembersList()],
+      ),
     );
   }
 
@@ -94,21 +53,22 @@ class _LinkedInternationalFederationMembersState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Federation Members',
-          style: AppTextStyles.subHeading2,
-        ),
+        Text('Federation Members', style: AppTextStyles.subHeading2),
         SizedBox(
-          height:48 ,
+          height: 48,
           child: CustomButton(
             isSecondaryBtn: true,
             title: 'Add Federations',
             borderColor: AppColors.primaryColor,
             icon: Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: SvgPicture.asset(AppAssets.federationIcon,
-                  colorFilter: ColorFilter.mode(
-                      AppColors.primaryColor, BlendMode.srcIn), ),
+              child: SvgPicture.asset(
+                AppAssets.federationIcon,
+                colorFilter: ColorFilter.mode(
+                  AppColors.primaryColor,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
             onTap: _addFederations,
           ),
@@ -118,10 +78,38 @@ class _LinkedInternationalFederationMembersState
   }
 
   Widget _buildMembersList() {
-    return Column(
-      children: _members.map((memberData) {
-        return _buildMemberCard(memberData);
-      }).toList(),
+    return BlocBuilder<FederationMemberBloc, FederationMemberState>(
+      builder: (context, state) {
+        if (state is MembersLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is MembersLoaded) {
+          if (state.members.isEmpty) {
+            return Center(
+              child: Text(
+                'No members found',
+                style: AppTextStyles.body1.copyWith(
+                  color: AppColors.neutral600,
+                ),
+              ),
+            );
+          }
+          return Column(
+            children: state.members.map((memberData) {
+              return _buildMemberCard(memberData);
+            }).toList(),
+          );
+        } else if (state is MembersError) {
+          return Center(
+            child: Text(
+              state.message,
+              style: AppTextStyles.body1.copyWith(
+                color: AppColors.negativeColor,
+              ),
+            ),
+          );
+        }
+        return const SizedBox();
+      },
     );
   }
 
@@ -134,10 +122,7 @@ class _LinkedInternationalFederationMembersState
       decoration: BoxDecoration(
         color: AppColors.baseWhiteColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.neutral200,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.neutral200, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,9 +132,7 @@ class _LinkedInternationalFederationMembersState
             width: 60,
             height: 60,
             clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle),
             child: CustomCachedImageWidget(
               url: memberData.fedLogo ?? AppConstants.dummyImageUrl,
             ),
@@ -163,7 +146,7 @@ class _LinkedInternationalFederationMembersState
                 Text(
                   memberData.name ?? 'Unknown Federation',
                   style: AppTextStyles.body1.copyWith(
-                      color: AppColors.neutral700
+                    color: AppColors.neutral700,
                   ),
                 ),
                 8.verticalSpace,
@@ -200,8 +183,8 @@ class _LinkedInternationalFederationMembersState
                     ),
                   ],
                 ),
-                isMobile? 8.verticalSpace:0.verticalSpace,
-                 isMobile? _buildExpiryBadge(memberData):SizedBox(),
+                isMobile ? 8.verticalSpace : 0.verticalSpace,
+                isMobile ? _buildExpiryBadge(memberData) : SizedBox(),
               ],
             ),
           ),
@@ -249,7 +232,7 @@ class _LinkedInternationalFederationMembersState
   }
 
   void _addFederations() {
-    showDialog(context:context, builder: (context) => AddFederationDialog(),);
+    showDialog(context: context, builder: (context) => AddFederationDialog());
   }
 }
 
