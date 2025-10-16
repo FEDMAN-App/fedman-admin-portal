@@ -21,6 +21,7 @@ class DialogPage<T> extends Page<T> {
   @override
   Route<T> createRoute(BuildContext context) {
     return DialogRoute<T>(
+
       context: context,
       settings: this,
       builder: builder,

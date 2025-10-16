@@ -24,7 +24,6 @@ _FederationModel _$FederationModelFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String?,
       createdDate: json['createdAt'] as String?,
       updatedAt: json['updatedAt'] as String?,
-      joinedAt: json['joinedAt'] as String?,
       memberFederationIds: (json['memberFederationIds'] as List<dynamic>?)
           ?.map((e) => (e as num).toInt())
           .toList(),
@@ -49,7 +48,6 @@ Map<String, dynamic> _$FederationModelToJson(_FederationModel instance) =>
       'status': ?instance.status,
       'createdAt': ?instance.createdDate,
       'updatedAt': ?instance.updatedAt,
-      'joinedAt': ?instance.joinedAt,
       'memberFederationIds': ?_listToJson(instance.memberFederationIds),
       'parentFederationIds': ?_listToJson(instance.parentFederationIds),
       'memberCount': ?instance.memberCount,

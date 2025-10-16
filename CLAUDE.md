@@ -45,6 +45,7 @@ SvgPicture.asset(AppAssets.myIcon)
 - **Spacing**: Always use spacing extensions from `@lib/core/extensions/space.dart` instead of hardcoded SizedBox values. Available extensions: `horizontalSpace`, `verticalSpace`, `responsiveHorizontalSpace`, `responsiveVerticalSpace`. Example: `16.verticalSpace` instead of `SizedBox(height: 16)`
 - **Navigation**: Always use go_router for navigation instead of Navigator. Use `context.go('/route')` for navigation, `context.push('/route')` for overlay navigation, and `context.pop()` to go back. Import go_router: `import 'package:go_router/go_router.dart'`
 - **Network Images**: Always use `CustomCachedImageWidget` from `@lib/core/common_widgets/custom_cached_image_widget.dart` instead of `Image.network()` for loading network images. This provides automatic caching, loading states, and error handling.
+- **Error Handling**: Always use `RetryWidget` from `@lib/core/common_widgets/retry_widget.dart` for displaying errors with retry functionality. This provides consistent error UI across the app.
 
 Example:
 ```dart
@@ -53,6 +54,12 @@ CustomCachedImageWidget(
   url: imageUrl,
   width: 100,
   height: 100,
+)
+
+// For error states with retry
+RetryWidget(
+  message: 'Failed to load data',
+  onTapOnRetry: () => _loadData(),
 )
 ```
 
@@ -88,21 +95,27 @@ Use `@lib/core/common_widgets/responsive_row_column.dart` for responsive Row/Col
 - Optional Expanded wrapping with custom flex values
 - Automatic filtering of empty SizedBox widgets
 
+**IMPORTANT: When using ResponsiveRowColumn:**
+- Set `wrapInExpanded: true` to automatically wrap children in Expanded widgets (for Row mode only)
+- Use `flexValues: [3, 1, 1]` to control flex ratios instead of manually wrapping widgets in Expanded
+- DO NOT manually wrap children in Expanded - let ResponsiveRowColumn handle it
+- The `excludeSpacingFromExpanded: true` (default) ensures spacing widgets are not wrapped in Expanded
+
 Example usage:
 ```dart
 ResponsiveRowColumn(
   layout: ResponsiveLayout.mobileColumn,
   spacing: 16,
   wrapInExpanded: true,
-  flexValues: [2, 1, 1], // Custom flex ratios
+  flexValues: [3, 1, 1], // Custom flex ratios - first child gets flex: 3, others get flex: 1
   rowMainAxisAlignment: MainAxisAlignment.spaceBetween,
   columnMainAxisAlignment: MainAxisAlignment.start,
   rowCrossAxisAlignment: CrossAxisAlignment.center,
   columnCrossAxisAlignment: CrossAxisAlignment.stretch,
   children: [
-    Card1(),
-    Card2(),
-    Card3(),
+    CustomTextFormField(...), // Will get flex: 3
+    DropdownButton(...),      // Will get flex: 1  
+    DropdownButton(...),      // Will get flex: 1
   ],
 ),
 ```

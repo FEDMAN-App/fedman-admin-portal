@@ -34,4 +34,5 @@ class AppAssets {
   
   // Success Icons
   static const String successCheckMark = 'assets/images/success_check_mark.png';
+  static const String circleCheckIcon = 'assets/images/circle_check.svg';
 }

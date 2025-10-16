@@ -17,6 +17,7 @@ class CustomButton extends StatelessWidget {
   final bool showTitle;
   final bool isLeadingIcon;
   final bool isSecondaryBtn;
+  final bool centerAlign;
 
   const CustomButton({
     super.key,
@@ -30,6 +31,7 @@ class CustomButton extends StatelessWidget {
     this.isLoading = false,
     this.isLeadingIcon = true,
     this.isSecondaryBtn = false,
+    this.centerAlign = false,
   });
 
   @override
@@ -58,7 +60,7 @@ class CustomButton extends StatelessWidget {
           // color:  isSecondaryBtn?AppColors.primary50:null,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: icon != null
+            mainAxisAlignment: icon != null && !centerAlign
                 ? MainAxisAlignment.spaceBetween
                 : MainAxisAlignment.center,
             children: [

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FederationModel {
 
-@JsonKey(includeIfNull: false) int? get id; String get name;@FederationTypeConverter() FederationType get type;@JsonKey(name: 'address') String get streetAddress;@JsonKey(name: 'postalCode') String get postCode; String get city; String get country;@JsonKey(includeIfNull: false, name: 'logoUrl') String? get fedLogo;@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> get documents;@JsonKey(includeIfNull: false) String? get status;@JsonKey(name: 'createdAt', includeIfNull: false) String? get createdDate;@JsonKey(name: 'updatedAt', includeIfNull: false) String? get updatedAt;@JsonKey(includeIfNull: false) String? get joinedAt;@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? get memberFederationIds;@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? get parentFederationIds;@JsonKey(includeIfNull: false) int? get memberCount;@JsonKey(includeIfNull: false) int? get parentCount;
+@JsonKey(includeIfNull: false) int? get id; String get name;@FederationTypeConverter() FederationType get type;@JsonKey(name: 'address') String get streetAddress;@JsonKey(name: 'postalCode') String get postCode; String get city; String get country;@JsonKey(includeIfNull: false, name: 'logoUrl') String? get fedLogo;@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> get documents;@JsonKey(includeIfNull: false) String? get status;@JsonKey(name: 'createdAt', includeIfNull: false) String? get createdDate;@JsonKey(name: 'updatedAt', includeIfNull: false) String? get updatedAt;@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? get memberFederationIds;@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? get parentFederationIds;@JsonKey(includeIfNull: false) int? get memberCount;@JsonKey(includeIfNull: false) int? get parentCount;
 /// Create a copy of FederationModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FederationModelCopyWith<FederationModel> get copyWith => _$FederationModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FederationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.streetAddress, streetAddress) || other.streetAddress == streetAddress)&&(identical(other.postCode, postCode) || other.postCode == postCode)&&(identical(other.city, city) || other.city == city)&&(identical(other.country, country) || other.country == country)&&(identical(other.fedLogo, fedLogo) || other.fedLogo == fedLogo)&&const DeepCollectionEquality().equals(other.documents, documents)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdDate, createdDate) || other.createdDate == createdDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&const DeepCollectionEquality().equals(other.memberFederationIds, memberFederationIds)&&const DeepCollectionEquality().equals(other.parentFederationIds, parentFederationIds)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.parentCount, parentCount) || other.parentCount == parentCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FederationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.streetAddress, streetAddress) || other.streetAddress == streetAddress)&&(identical(other.postCode, postCode) || other.postCode == postCode)&&(identical(other.city, city) || other.city == city)&&(identical(other.country, country) || other.country == country)&&(identical(other.fedLogo, fedLogo) || other.fedLogo == fedLogo)&&const DeepCollectionEquality().equals(other.documents, documents)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdDate, createdDate) || other.createdDate == createdDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other.memberFederationIds, memberFederationIds)&&const DeepCollectionEquality().equals(other.parentFederationIds, parentFederationIds)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.parentCount, parentCount) || other.parentCount == parentCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,streetAddress,postCode,city,country,fedLogo,const DeepCollectionEquality().hash(documents),status,createdDate,updatedAt,joinedAt,const DeepCollectionEquality().hash(memberFederationIds),const DeepCollectionEquality().hash(parentFederationIds),memberCount,parentCount);
+int get hashCode => Object.hash(runtimeType,id,name,type,streetAddress,postCode,city,country,fedLogo,const DeepCollectionEquality().hash(documents),status,createdDate,updatedAt,const DeepCollectionEquality().hash(memberFederationIds),const DeepCollectionEquality().hash(parentFederationIds),memberCount,parentCount);
 
 @override
 String toString() {
-  return 'FederationModel(id: $id, name: $name, type: $type, streetAddress: $streetAddress, postCode: $postCode, city: $city, country: $country, fedLogo: $fedLogo, documents: $documents, status: $status, createdDate: $createdDate, updatedAt: $updatedAt, joinedAt: $joinedAt, memberFederationIds: $memberFederationIds, parentFederationIds: $parentFederationIds, memberCount: $memberCount, parentCount: $parentCount)';
+  return 'FederationModel(id: $id, name: $name, type: $type, streetAddress: $streetAddress, postCode: $postCode, city: $city, country: $country, fedLogo: $fedLogo, documents: $documents, status: $status, createdDate: $createdDate, updatedAt: $updatedAt, memberFederationIds: $memberFederationIds, parentFederationIds: $parentFederationIds, memberCount: $memberCount, parentCount: $parentCount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FederationModelCopyWith<$Res>  {
   factory $FederationModelCopyWith(FederationModel value, $Res Function(FederationModel) _then) = _$FederationModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeIfNull: false) int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(includeIfNull: false, name: 'logoUrl') String? fedLogo,@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false) String? joinedAt,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? memberFederationIds,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? parentFederationIds,@JsonKey(includeIfNull: false) int? memberCount,@JsonKey(includeIfNull: false) int? parentCount
+@JsonKey(includeIfNull: false) int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(includeIfNull: false, name: 'logoUrl') String? fedLogo,@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? memberFederationIds,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? parentFederationIds,@JsonKey(includeIfNull: false) int? memberCount,@JsonKey(includeIfNull: false) int? parentCount
 });
 
 
@@ -65,7 +65,7 @@ class _$FederationModelCopyWithImpl<$Res>
 
 /// Create a copy of FederationModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? type = null,Object? streetAddress = null,Object? postCode = null,Object? city = null,Object? country = null,Object? fedLogo = freezed,Object? documents = null,Object? status = freezed,Object? createdDate = freezed,Object? updatedAt = freezed,Object? joinedAt = freezed,Object? memberFederationIds = freezed,Object? parentFederationIds = freezed,Object? memberCount = freezed,Object? parentCount = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? type = null,Object? streetAddress = null,Object? postCode = null,Object? city = null,Object? country = null,Object? fedLogo = freezed,Object? documents = null,Object? status = freezed,Object? createdDate = freezed,Object? updatedAt = freezed,Object? memberFederationIds = freezed,Object? parentFederationIds = freezed,Object? memberCount = freezed,Object? parentCount = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -79,7 +79,6 @@ as String?,documents: null == documents ? _self.documents : documents // ignore:
 as List<DocumentModel>,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,createdDate: freezed == createdDate ? _self.createdDate : createdDate // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,joinedAt: freezed == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
 as String?,memberFederationIds: freezed == memberFederationIds ? _self.memberFederationIds : memberFederationIds // ignore: cast_nullable_to_non_nullable
 as List<int>?,parentFederationIds: freezed == parentFederationIds ? _self.parentFederationIds : parentFederationIds // ignore: cast_nullable_to_non_nullable
 as List<int>?,memberCount: freezed == memberCount ? _self.memberCount : memberCount // ignore: cast_nullable_to_non_nullable
@@ -169,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  String? joinedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FederationModel() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.joinedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
+return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
   return orElse();
 
 }
@@ -190,10 +189,10 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  String? joinedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)  $default,) {final _that = this;
 switch (_that) {
 case _FederationModel():
-return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.joinedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
+return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +209,10 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false)  String? joinedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeIfNull: false)  int? id,  String name, @FederationTypeConverter()  FederationType type, @JsonKey(name: 'address')  String streetAddress, @JsonKey(name: 'postalCode')  String postCode,  String city,  String country, @JsonKey(includeIfNull: false, name: 'logoUrl')  String? fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson)  List<DocumentModel> documents, @JsonKey(includeIfNull: false)  String? status, @JsonKey(name: 'createdAt', includeIfNull: false)  String? createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false)  String? updatedAt, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson)  List<int>? parentFederationIds, @JsonKey(includeIfNull: false)  int? memberCount, @JsonKey(includeIfNull: false)  int? parentCount)?  $default,) {final _that = this;
 switch (_that) {
 case _FederationModel() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.joinedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
+return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCode,_that.city,_that.country,_that.fedLogo,_that.documents,_that.status,_that.createdDate,_that.updatedAt,_that.memberFederationIds,_that.parentFederationIds,_that.memberCount,_that.parentCount);case _:
   return null;
 
 }
@@ -225,7 +224,7 @@ return $default(_that.id,_that.name,_that.type,_that.streetAddress,_that.postCod
 @JsonSerializable()
 
 class _FederationModel implements FederationModel {
-  const _FederationModel({@JsonKey(includeIfNull: false) this.id, required this.name, @FederationTypeConverter() required this.type, @JsonKey(name: 'address') required this.streetAddress, @JsonKey(name: 'postalCode') required this.postCode, required this.city, required this.country, @JsonKey(includeIfNull: false, name: 'logoUrl') this.fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson) final  List<DocumentModel> documents = const [], @JsonKey(includeIfNull: false) this.status, @JsonKey(name: 'createdAt', includeIfNull: false) this.createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false) this.updatedAt, @JsonKey(includeIfNull: false) this.joinedAt, @JsonKey(includeIfNull: false, toJson: _listToJson) final  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson) final  List<int>? parentFederationIds, @JsonKey(includeIfNull: false) this.memberCount, @JsonKey(includeIfNull: false) this.parentCount}): _documents = documents,_memberFederationIds = memberFederationIds,_parentFederationIds = parentFederationIds;
+  const _FederationModel({@JsonKey(includeIfNull: false) this.id, required this.name, @FederationTypeConverter() required this.type, @JsonKey(name: 'address') required this.streetAddress, @JsonKey(name: 'postalCode') required this.postCode, required this.city, required this.country, @JsonKey(includeIfNull: false, name: 'logoUrl') this.fedLogo, @JsonKey(includeIfNull: false, toJson: _dynamicListToJson) final  List<DocumentModel> documents = const [], @JsonKey(includeIfNull: false) this.status, @JsonKey(name: 'createdAt', includeIfNull: false) this.createdDate, @JsonKey(name: 'updatedAt', includeIfNull: false) this.updatedAt, @JsonKey(includeIfNull: false, toJson: _listToJson) final  List<int>? memberFederationIds, @JsonKey(includeIfNull: false, toJson: _listToJson) final  List<int>? parentFederationIds, @JsonKey(includeIfNull: false) this.memberCount, @JsonKey(includeIfNull: false) this.parentCount}): _documents = documents,_memberFederationIds = memberFederationIds,_parentFederationIds = parentFederationIds;
   factory _FederationModel.fromJson(Map<String, dynamic> json) => _$FederationModelFromJson(json);
 
 @override@JsonKey(includeIfNull: false) final  int? id;
@@ -246,7 +245,6 @@ class _FederationModel implements FederationModel {
 @override@JsonKey(includeIfNull: false) final  String? status;
 @override@JsonKey(name: 'createdAt', includeIfNull: false) final  String? createdDate;
 @override@JsonKey(name: 'updatedAt', includeIfNull: false) final  String? updatedAt;
-@override@JsonKey(includeIfNull: false) final  String? joinedAt;
  final  List<int>? _memberFederationIds;
 @override@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? get memberFederationIds {
   final value = _memberFederationIds;
@@ -281,16 +279,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FederationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.streetAddress, streetAddress) || other.streetAddress == streetAddress)&&(identical(other.postCode, postCode) || other.postCode == postCode)&&(identical(other.city, city) || other.city == city)&&(identical(other.country, country) || other.country == country)&&(identical(other.fedLogo, fedLogo) || other.fedLogo == fedLogo)&&const DeepCollectionEquality().equals(other._documents, _documents)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdDate, createdDate) || other.createdDate == createdDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&const DeepCollectionEquality().equals(other._memberFederationIds, _memberFederationIds)&&const DeepCollectionEquality().equals(other._parentFederationIds, _parentFederationIds)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.parentCount, parentCount) || other.parentCount == parentCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FederationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.streetAddress, streetAddress) || other.streetAddress == streetAddress)&&(identical(other.postCode, postCode) || other.postCode == postCode)&&(identical(other.city, city) || other.city == city)&&(identical(other.country, country) || other.country == country)&&(identical(other.fedLogo, fedLogo) || other.fedLogo == fedLogo)&&const DeepCollectionEquality().equals(other._documents, _documents)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdDate, createdDate) || other.createdDate == createdDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other._memberFederationIds, _memberFederationIds)&&const DeepCollectionEquality().equals(other._parentFederationIds, _parentFederationIds)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.parentCount, parentCount) || other.parentCount == parentCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,streetAddress,postCode,city,country,fedLogo,const DeepCollectionEquality().hash(_documents),status,createdDate,updatedAt,joinedAt,const DeepCollectionEquality().hash(_memberFederationIds),const DeepCollectionEquality().hash(_parentFederationIds),memberCount,parentCount);
+int get hashCode => Object.hash(runtimeType,id,name,type,streetAddress,postCode,city,country,fedLogo,const DeepCollectionEquality().hash(_documents),status,createdDate,updatedAt,const DeepCollectionEquality().hash(_memberFederationIds),const DeepCollectionEquality().hash(_parentFederationIds),memberCount,parentCount);
 
 @override
 String toString() {
-  return 'FederationModel(id: $id, name: $name, type: $type, streetAddress: $streetAddress, postCode: $postCode, city: $city, country: $country, fedLogo: $fedLogo, documents: $documents, status: $status, createdDate: $createdDate, updatedAt: $updatedAt, joinedAt: $joinedAt, memberFederationIds: $memberFederationIds, parentFederationIds: $parentFederationIds, memberCount: $memberCount, parentCount: $parentCount)';
+  return 'FederationModel(id: $id, name: $name, type: $type, streetAddress: $streetAddress, postCode: $postCode, city: $city, country: $country, fedLogo: $fedLogo, documents: $documents, status: $status, createdDate: $createdDate, updatedAt: $updatedAt, memberFederationIds: $memberFederationIds, parentFederationIds: $parentFederationIds, memberCount: $memberCount, parentCount: $parentCount)';
 }
 
 
@@ -301,7 +299,7 @@ abstract mixin class _$FederationModelCopyWith<$Res> implements $FederationModel
   factory _$FederationModelCopyWith(_FederationModel value, $Res Function(_FederationModel) _then) = __$FederationModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeIfNull: false) int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(includeIfNull: false, name: 'logoUrl') String? fedLogo,@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false) String? joinedAt,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? memberFederationIds,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? parentFederationIds,@JsonKey(includeIfNull: false) int? memberCount,@JsonKey(includeIfNull: false) int? parentCount
+@JsonKey(includeIfNull: false) int? id, String name,@FederationTypeConverter() FederationType type,@JsonKey(name: 'address') String streetAddress,@JsonKey(name: 'postalCode') String postCode, String city, String country,@JsonKey(includeIfNull: false, name: 'logoUrl') String? fedLogo,@JsonKey(includeIfNull: false, toJson: _dynamicListToJson) List<DocumentModel> documents,@JsonKey(includeIfNull: false) String? status,@JsonKey(name: 'createdAt', includeIfNull: false) String? createdDate,@JsonKey(name: 'updatedAt', includeIfNull: false) String? updatedAt,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? memberFederationIds,@JsonKey(includeIfNull: false, toJson: _listToJson) List<int>? parentFederationIds,@JsonKey(includeIfNull: false) int? memberCount,@JsonKey(includeIfNull: false) int? parentCount
 });
 
 
@@ -318,7 +316,7 @@ class __$FederationModelCopyWithImpl<$Res>
 
 /// Create a copy of FederationModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? type = null,Object? streetAddress = null,Object? postCode = null,Object? city = null,Object? country = null,Object? fedLogo = freezed,Object? documents = null,Object? status = freezed,Object? createdDate = freezed,Object? updatedAt = freezed,Object? joinedAt = freezed,Object? memberFederationIds = freezed,Object? parentFederationIds = freezed,Object? memberCount = freezed,Object? parentCount = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? type = null,Object? streetAddress = null,Object? postCode = null,Object? city = null,Object? country = null,Object? fedLogo = freezed,Object? documents = null,Object? status = freezed,Object? createdDate = freezed,Object? updatedAt = freezed,Object? memberFederationIds = freezed,Object? parentFederationIds = freezed,Object? memberCount = freezed,Object? parentCount = freezed,}) {
   return _then(_FederationModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -332,7 +330,6 @@ as String?,documents: null == documents ? _self._documents : documents // ignore
 as List<DocumentModel>,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,createdDate: freezed == createdDate ? _self.createdDate : createdDate // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,joinedAt: freezed == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
 as String?,memberFederationIds: freezed == memberFederationIds ? _self._memberFederationIds : memberFederationIds // ignore: cast_nullable_to_non_nullable
 as List<int>?,parentFederationIds: freezed == parentFederationIds ? _self._parentFederationIds : parentFederationIds // ignore: cast_nullable_to_non_nullable
 as List<int>?,memberCount: freezed == memberCount ? _self.memberCount : memberCount // ignore: cast_nullable_to_non_nullable

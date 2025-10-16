@@ -33,7 +33,7 @@ class AppTextStyles {
   // Heading 2 - 28 Bold
   static TextStyle heading2 = getTextStyle(
     fontSize: 28,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w600,
     color: AppColors.baseBlackColor,
   );
 
@@ -95,6 +95,14 @@ class AppTextStyles {
   // CTA2 - 16 Regular
   static TextStyle cta2 = getTextStyle(
     fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.baseBlackColor,
+  );
+
+
+  // Body 2 - 14 Regular
+  static TextStyle line = getTextStyle(
+    fontSize: 10,
     fontWeight: FontWeight.w400,
     color: AppColors.baseBlackColor,
   );

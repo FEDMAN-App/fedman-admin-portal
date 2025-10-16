@@ -1,3 +1,4 @@
+import 'package:fedman_admin_app/presentation/disciplines/data/enums/sport_types.dart';
 import 'package:fedman_admin_app/presentation/federations/widgets/add_discipline_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -19,25 +20,91 @@ class LinkedDisciplinesView extends StatefulWidget {
 class _LinkedDisciplinesViewState extends State<LinkedDisciplinesView> {
   final List<DisciplineModel> _disciplines = [
     DisciplineModel(
-      id: '1',
+      id: 1,
       name: 'Show Jumping',
-      levels: 5,
-      rankingEnabled: true,
-      levelNames: ['Starter', 'Pre-Entry', 'Starter', 'Starter'],
+      levels: [
+        LevelModel(
+          levelName: 'Starter',
+          categories: [
+            CategoryModel(
+              categoryName: 'Height',
+              categoryValues: ['60cm', '70cm', '80cm'],
+            ),
+          ],
+          classTypes: ['Individual', 'Team'],
+        ),
+        LevelModel(
+          levelName: 'Pre-Entry',
+          categories: [
+            CategoryModel(
+              categoryName: 'Height',
+              categoryValues: ['90cm', '1.00m'],
+            ),
+          ],
+          classTypes: ['Individual'],
+        ),
+      ],
+      hasRanking: true,
+      sportType: SportType.horseSports,
+      status: 'active',
     ),
     DisciplineModel(
-      id: '2',
+      id: 2,
       name: 'Dressage',
-      levels: 7,
-      rankingEnabled: true,
-      levelNames: ['Starter', 'Pre-Entry', 'Starter', 'Starter'],
+      levels: [
+        LevelModel(
+          levelName: 'Introductory',
+          categories: [
+            CategoryModel(
+              categoryName: 'Test Level',
+              categoryValues: ['Test A', 'Test B'],
+            ),
+          ],
+          classTypes: ['Individual'],
+        ),
+        LevelModel(
+          levelName: 'Training',
+          categories: [
+            CategoryModel(
+              categoryName: 'Test Level',
+              categoryValues: ['Level 1', 'Level 2'],
+            ),
+          ],
+          classTypes: ['Individual', 'Freestyle'],
+        ),
+      ],
+      hasRanking: true,
+      sportType: SportType.horseSports,
+      status: 'active',
     ),
     DisciplineModel(
-      id: '3',
+      id: 3,
       name: 'Cross Country',
-      levels: 4,
-      rankingEnabled: false,
-      levelNames: ['Starter', 'Pre-Entry', 'Starter', 'Starter'],
+      levels: [
+        LevelModel(
+          levelName: 'Beginner Novice',
+          categories: [
+            CategoryModel(
+              categoryName: 'Distance',
+              categoryValues: ['2640m', '3000m'],
+            ),
+          ],
+          classTypes: ['Individual'],
+        ),
+        LevelModel(
+          levelName: 'Novice',
+          categories: [
+            CategoryModel(
+              categoryName: 'Fence Height',
+              categoryValues: ['2\'9"', '3\'0"'],
+            ),
+          ],
+          classTypes: ['Individual'],
+        ),
+      ],
+      hasRanking: false,
+      sportType: SportType.horseSports,
+      status: 'active',
     ),
   ];
 

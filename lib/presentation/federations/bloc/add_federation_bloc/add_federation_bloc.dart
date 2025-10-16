@@ -5,7 +5,6 @@ import 'package:fedman_admin_app/core/utils/error_handler.dart';
 import 'package:fedman_admin_app/core/utils/logger_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';
-import 'package:flutter_dropzone/flutter_dropzone.dart';
 
 import '../../data/models/federation_model.dart';
 import '../../data/repositories/federation_repo.dart';
@@ -18,18 +17,26 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
   List<int> memberFederationIds = [];
   List<int> parentFederationIds = [];
 
-  AddFederationBloc({required this.federationRepo}) : super(AddFederationInitial()) {
+  AddFederationBloc({required this.federationRepo})
+    : super(AddFederationInitial()) {
     on<CreateFederationRequested>(_onCreateFederationRequested);
     on<UpdateFederationRequested>(_onUpdateFederationRequested);
     on<LoadFederationForEditRequested>(_onLoadFederationForEditRequested);
     on<GetFederationsRequested>(_onGetFederationsRequested);
     on<LoadMoreFederationsRequested>(_onLoadMoreFederationsRequested);
     on<UploadFederationLogoRequested>(_onUploadFederationLogoRequested);
-    on<UploadFederationDocumentsRequested>(_onUploadFederationDocumentsRequested);
-    on<UploadMultipleFederationDocumentsRequested>(_onUploadMultipleFederationDocumentsRequested);
+    on<UploadFederationDocumentsRequested>(
+      _onUploadFederationDocumentsRequested,
+    );
+    on<UploadMultipleFederationDocumentsRequested>(
+      _onUploadMultipleFederationDocumentsRequested,
+    );
   }
 
-  String? _validateFederation(FederationModel federation) {
+  String? _validateFederation(
+    FederationModel federation, {
+    bool isEditing = false,
+  }) {
     if (federation.name.trim().isEmpty) {
       return 'Please enter federation name';
     }
@@ -54,25 +61,25 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
     if (federation.fedLogo == null || federation.fedLogo!.isEmpty) {
       return 'Please provide a federation logo';
     }
-
-    // Validation for International and Continental federations
-    if (federation.type.apiValue == 'INTERNATIONAL' || 
-        federation.type.apiValue == 'CONTINENTAL') {
-      if (memberFederationIds.isEmpty) {
-        return '${federation.type.displayName} federations must have at least one member federation';
+    if (!isEditing) {
+      if (federation.type.apiValue == 'INTERNATIONAL' ||
+          federation.type.apiValue == 'CONTINENTAL') {
+        if (memberFederationIds.isEmpty) {
+          return '${federation.type.displayName} federations must have at least one member federation';
+        }
+      } else if (federation.type.apiValue == 'NO_TYPE_SELECTED') {
+        return 'Please select federation type';
       }
-    }else if(federation.type.apiValue == 'NO_TYPE_SELECTED') {
-      return 'Please select federation type';
     }
+    // Validation for International and Continental federations
 
     return null; // No validation errors
   }
 
-
   Future<void> _onGetFederationsRequested(
-      GetFederationsRequested event,
-      Emitter<AddFederationState> emit,
-      ) async {
+    GetFederationsRequested event,
+    Emitter<AddFederationState> emit,
+  ) async {
     try {
       emit(FederationsLoading());
 
@@ -85,16 +92,22 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
 
       if (result.success && result.data != null) {
         final paginatedData = result.data!;
-        emit(FederationsSuccess(
-          federations: paginatedData.items,
-          message: result.message ?? 'Federations loaded successfully',
-          total: paginatedData.total,
-          page: paginatedData.page,
-          limit: paginatedData.limit,
-          totalPages: paginatedData.totalPages,
-        ));
+        emit(
+          FederationsSuccess(
+            federations: paginatedData.items,
+            message: result.message ?? 'Federations loaded successfully',
+            total: paginatedData.total,
+            page: paginatedData.page,
+            limit: paginatedData.limit,
+            totalPages: paginatedData.totalPages,
+          ),
+        );
       } else {
-        emit(FederationsError(message: result.message ?? 'Failed to load federations'));
+        emit(
+          FederationsError(
+            message: result.message ?? 'Failed to load federations',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
@@ -122,20 +135,29 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
 
       if (result.success && result.data != null) {
         final paginatedData = result.data!;
-        final updatedFederations = [...currentState.federations, ...paginatedData.items];
-        
-        emit(FederationsSuccess(
-          federations: updatedFederations,
-          message: result.message ?? 'More federations loaded successfully',
-          total: paginatedData.total,
-          page: paginatedData.page,
-          limit: paginatedData.limit,
-          totalPages: paginatedData.totalPages,
-          isLoadingMore: false,
-        ));
+        final updatedFederations = [
+          ...currentState.federations,
+          ...paginatedData.items,
+        ];
+
+        emit(
+          FederationsSuccess(
+            federations: updatedFederations,
+            message: result.message ?? 'More federations loaded successfully',
+            total: paginatedData.total,
+            page: paginatedData.page,
+            limit: paginatedData.limit,
+            totalPages: paginatedData.totalPages,
+            isLoadingMore: false,
+          ),
+        );
       } else {
         emit(currentState.copyWith(isLoadingMore: false));
-        emit(FederationsError(message: result.message ?? 'Failed to load more federations'));
+        emit(
+          FederationsError(
+            message: result.message ?? 'Failed to load more federations',
+          ),
+        );
       }
     } catch (e) {
       final currentState = state;
@@ -164,14 +186,16 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
 
       // Create federation with appropriate federation IDs
       final federationToCreate = event.federation.copyWith(
-        memberFederationIds: (event.federation.type.apiValue == 'INTERNATIONAL' ||
-                                         event.federation.type.apiValue == 'CONTINENTAL') 
-                                         ? memberFederationIds 
-                                         : [],
-        parentFederationIds: (event.federation.type.apiValue == 'NATIONAL' ||
-                                         event.federation.type.apiValue == 'REGIONAL') 
-                                         ? parentFederationIds 
-                                         : [],
+        memberFederationIds:
+            (event.federation.type.apiValue == 'INTERNATIONAL' ||
+                event.federation.type.apiValue == 'CONTINENTAL')
+            ? memberFederationIds
+            : [],
+        parentFederationIds:
+            (event.federation.type.apiValue == 'NATIONAL' ||
+                event.federation.type.apiValue == 'REGIONAL')
+            ? parentFederationIds
+            : [],
       );
 
       final result = await federationRepo.createFederation(federationToCreate);
@@ -180,14 +204,20 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
         // // Clear the lists after successful creation
         // memberFederationIds.clear();
         // parentFederationIds.clear();
-        
-        emit(AddFederationSuccess(
-          federation: result.data!,
-          message: result.message ?? 'Federation created successfully',
-          isUpdate: false,
-        ));
+
+        emit(
+          AddFederationSuccess(
+            federation: result.data!,
+            message: result.message ?? 'Federation created successfully',
+            isUpdate: false,
+          ),
+        );
       } else {
-        emit(AddFederationError(message: result.message ?? 'Failed to create federation'));
+        emit(
+          AddFederationError(
+            message: result.message ?? 'Failed to create federation',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
@@ -204,22 +234,31 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
       emit(AddFederationLoading());
 
       // Validate federation data
-      final validationError = _validateFederation(event.federation);
+      final validationError = _validateFederation(event.federation,isEditing: true);
       if (validationError != null) {
         emit(AddFederationError(message: validationError));
         return;
       }
 
-      final result = await federationRepo.updateFederation(event.federationId, event.federation);
+      final result = await federationRepo.updateFederation(
+        event.federationId,
+        event.federation,
+      );
 
       if (result.success && result.data != null) {
-        emit(AddFederationSuccess(
-          federation: result.data!,
-          message: result.message ?? 'Federation updated successfully',
-          isUpdate: true,
-        ));
+        emit(
+          AddFederationSuccess(
+            federation: result.data!,
+            message: result.message ?? 'Federation updated successfully',
+            isUpdate: true,
+          ),
+        );
       } else {
-        emit(AddFederationError(message: result.message ?? 'Failed to update federation'));
+        emit(
+          AddFederationError(
+            message: result.message ?? 'Failed to update federation',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
@@ -238,10 +277,13 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
       final result = await federationRepo.getFederationById(event.federationId);
 
       if (result.success && result.data != null) {
-
         emit(AddFederationLoaded(federation: result.data!));
       } else {
-        emit(AddFederationError(message: result.message ?? 'Failed to load federation'));
+        emit(
+          AddFederationError(
+            message: result.message ?? 'Failed to load federation',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
@@ -264,24 +306,30 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
       );
 
       if (result.success) {
-        emit(FileUploadSuccess(
-          fileType: 'logo',
-          message: result.message ?? 'Logo uploaded successfully',
-          fileUrl: result.data,
-        ));
+        emit(
+          FileUploadSuccess(
+            fileType: 'logo',
+            message: result.message ?? 'Logo uploaded successfully',
+            fileUrl: result.data,
+          ),
+        );
       } else {
-        emit(FileUploadError(
-          fileType: 'logo',
-          message: result.message ?? 'Failed to upload logo',
-        ));
+        emit(
+          FileUploadError(
+            fileType: 'logo',
+            message: result.message ?? 'Failed to upload logo',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
       GetIt.I.get<LoggerService>().e(error);
-      emit(FileUploadError(
-        fileType: 'logo',
-        message: 'Error uploading logo: $error',
-      ));
+      emit(
+        FileUploadError(
+          fileType: 'logo',
+          message: 'Error uploading logo: $error',
+        ),
+      );
     }
   }
 
@@ -299,24 +347,30 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
       );
 
       if (result.success) {
-        emit(FileUploadSuccess(
-          fileType: 'documents',
-          message: result.message ?? 'Documents uploaded successfully',
-          fileUrl: result.data,
-        ));
+        emit(
+          FileUploadSuccess(
+            fileType: 'documents',
+            message: result.message ?? 'Documents uploaded successfully',
+            fileUrl: result.data,
+          ),
+        );
       } else {
-        emit(FileUploadError(
-          fileType: 'documents',
-          message: result.message ?? 'Failed to upload documents',
-        ));
+        emit(
+          FileUploadError(
+            fileType: 'documents',
+            message: result.message ?? 'Failed to upload documents',
+          ),
+        );
       }
     } catch (e) {
       final error = ErrorHandler.handleError(e);
       GetIt.I.get<LoggerService>().e(error);
-      emit(FileUploadError(
-        fileType: 'documents',
-        message: 'Error uploading documents: $error',
-      ));
+      emit(
+        FileUploadError(
+          fileType: 'documents',
+          message: 'Error uploading documents: $error',
+        ),
+      );
     }
   }
 
@@ -336,27 +390,36 @@ class AddFederationBloc extends Bloc<AddFederationEvent, AddFederationState> {
         );
 
         if (!result.success) {
-          emit(FileUploadError(
-            fileType: 'documents',
-            message: result.message ?? 'Failed to upload document "${document.fileName}"',
-          ));
+          emit(
+            FileUploadError(
+              fileType: 'documents',
+              message:
+                  result.message ??
+                  'Failed to upload document "${document.fileName}"',
+            ),
+          );
           return;
         }
       }
 
       // All documents uploaded successfully
-      emit(FileUploadSuccess(
-        fileType: 'documents',
-        message: 'All documents uploaded successfully (${event.documents.length} files)',
-        fileUrl: null,
-      ));
+      emit(
+        FileUploadSuccess(
+          fileType: 'documents',
+          message:
+              'All documents uploaded successfully (${event.documents.length} files)',
+          fileUrl: null,
+        ),
+      );
     } catch (e) {
       final error = ErrorHandler.handleError(e);
       GetIt.I.get<LoggerService>().e(error);
-      emit(FileUploadError(
-        fileType: 'documents',
-        message: 'Error uploading documents: $error',
-      ));
+      emit(
+        FileUploadError(
+          fileType: 'documents',
+          message: 'Error uploading documents: $error',
+        ),
+      );
     }
   }
 }

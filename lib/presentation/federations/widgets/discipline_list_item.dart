@@ -141,15 +141,15 @@ class DisciplineListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: discipline.rankingEnabled
+          color: discipline.hasRanking
               ? AppColors.positive50Color
               : AppColors.negative100,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
-          discipline.rankingEnabled ? 'Yes' : 'No',
+          discipline.hasRanking ? 'Yes' : 'No',
           style: AppTextStyles.navlinks1.copyWith(
-            color: discipline.rankingEnabled
+            color: discipline.hasRanking
                 ? AppColors.positiveColor
                 : AppColors.negativeColor,
             fontWeight: FontWeight.w500,
@@ -165,7 +165,7 @@ class DisciplineListItem extends StatelessWidget {
       runAlignment: WrapAlignment.center,
       spacing: 8,
       runSpacing: 4,
-      children: discipline.levelNames.take(4).map((level) {
+      children: discipline.levels.take(4).map((level) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
@@ -177,7 +177,7 @@ class DisciplineListItem extends StatelessWidget {
             ),
           ),
           child: Text(
-            level,
+            level.levelName,
             style: AppTextStyles.body3.copyWith(
 
               color: AppColors.neutral800,

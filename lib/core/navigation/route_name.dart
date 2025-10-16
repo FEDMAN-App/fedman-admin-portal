@@ -8,6 +8,9 @@ class RouteName{
   static const String federationDetails = '/federations/:federationId';
   static const String addFederation = '/addFederation';
   static const String disciplines = '/disciplines';
+  static const String disciplineDetail = '/disciplines/detail';
+  static const String createDiscipline = '/disciplines/create';
+  static const String updateDiscipline = '/disciplines/update';
   static const String events = '/events';
   static const String judges = '/judges';
   static const String rankings = '/rankings';

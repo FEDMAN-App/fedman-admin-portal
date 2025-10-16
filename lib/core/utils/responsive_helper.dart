@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class ResponsiveHelper {
-  static const double mobileBreakpoint = 600;
+  static const double mobileBreakpoint = 810;
   static const double tabletBreakpoint = 1200;
 
   static bool isMobile(BuildContext context) {

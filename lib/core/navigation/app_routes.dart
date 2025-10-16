@@ -1,8 +1,12 @@
 import 'package:fedman_admin_app/core/common_widgets/responsive_navigation_wrapper.dart';
+import 'package:fedman_admin_app/core/constants/app_constants.dart';
 import 'package:fedman_admin_app/core/navigation/route_name.dart';
 import 'package:fedman_admin_app/presentation/account/screens/login_screen.dart';
 import 'package:fedman_admin_app/presentation/account/screens/splash_screen.dart';
 import 'package:fedman_admin_app/presentation/disciplines/screens/disciplines_screen.dart';
+import 'package:fedman_admin_app/presentation/disciplines/screens/create_new_discipline_screen.dart';
+import 'package:fedman_admin_app/presentation/disciplines/screens/widgets/discipline_detail_dialog.dart';
+import 'dialog_page.dart';
 import 'package:fedman_admin_app/presentation/events/screens/events_screen.dart';
 import 'package:fedman_admin_app/presentation/federations/screens/add_federation_screen.dart';
 import 'package:fedman_admin_app/presentation/federations/screens/federation_details_screen.dart';
@@ -22,6 +26,9 @@ import '../theme/app_text_styles.dart';
 class AppRoutes {
   // GoRouter configuration
   static final GoRouter router = GoRouter(
+    navigatorKey: AppConstants.rootNavigatorKey,
+    debugLogDiagnostics: true,
+
     initialLocation: RouteName.login,
     redirect: (context, state) {
       final localAuthRepo = GetIt.I<LocalAuthRepository>();
@@ -60,8 +67,13 @@ class AppRoutes {
         builder: (context, state) => const LoginScreen(),
       ),
 
+
+
+
       // Shell route with navigation wrapper
       ShellRoute(
+        parentNavigatorKey: AppConstants.rootNavigatorKey,
+        navigatorKey:AppConstants.shellNavigatorKey,
         builder: (context, state, child) {
           return ResponsiveNavigationWrapper(child: child);
         },
@@ -104,7 +116,45 @@ class AppRoutes {
           GoRoute(
             path: RouteName.disciplines,
             builder: (context, state) => const DisciplinesScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const CreateNewDisciplineScreen(),
+              ),
+              GoRoute(
+                path: 'update',
+                builder: (context, state) {
+                  final int? disciplineId = int.tryParse(state.uri.queryParameters['id'] ?? '');
+                  return CreateNewDisciplineScreen(disciplineId: disciplineId);
+                },
+              ),
+              GoRoute(
+
+                path: 'detail',
+                parentNavigatorKey: AppConstants.rootNavigatorKey,
+
+                pageBuilder: (context, state) {
+                  final String? disciplineId = state.uri.queryParameters['id'];
+                  if (disciplineId == null) {
+                    return DialogPage(
+                      builder: (context) => Center(
+                        child: Text(
+                          'Discipline ID is required',
+                          style: AppTextStyles.subHeading1,
+                        ),
+                      ),
+                    );
+                  }
+                  return DialogPage(
+                    barrierDismissible: false,
+                    builder: (context) => DisciplineDetailDialog(disciplineId: int.parse(disciplineId)),
+                  );
+                },
+              ),
+            ]
           ),
+
+
           GoRoute(
             path: RouteName.events,
             builder: (context, state) => const EventsScreen(),

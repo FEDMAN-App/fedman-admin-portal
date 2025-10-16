@@ -26,7 +26,6 @@ class _FedmanAdminAppState extends State<FedmanAdminApp> {
       enableScaleText: () => true,
       enableScaleWH: () => true,
       child: MaterialApp.router(
-
         title: 'Fedman admin',
         debugShowCheckedModeBanner: false,
         localizationsDelegates: context.localizationDelegates,

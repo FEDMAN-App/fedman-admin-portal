@@ -1,5 +1,6 @@
 import 'package:fedman_admin_app/core/utils/logger_service.dart';
 import 'package:fedman_admin_app/presentation/federations/data/repositories/federation_repo.dart';
+import 'package:fedman_admin_app/presentation/disciplines/data/repositories/discipline_repo.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,6 +34,12 @@ Future<void> setupDependencyInjection() async {
 
   getIt.registerLazySingleton<FederationRepo>(
         () => FederationRepo(
+      apiClient: getIt<ApiClient>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<DisciplineRepo>(
+        () => DisciplineRepo(
       apiClient: getIt<ApiClient>(),
     ),
   );

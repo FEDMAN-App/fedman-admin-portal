@@ -120,7 +120,7 @@ class _FederationTypeSelectorState extends State<FederationTypeSelector> {
         ),
         if(widget.editingMode)...[
           12.verticalSpace,
-          InfoWidget(text: "You can edit member or affiliated federations in federation detail page")
+          InfoWidget(text: "Federation type can't be edit, if you want to add member federations or affiliate federations, you can do it in federation detail page.")
         ],
 
         if(!widget.editingMode) ...[
