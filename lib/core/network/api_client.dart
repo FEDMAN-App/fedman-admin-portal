@@ -6,6 +6,12 @@ import 'package:dio/io.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../presentation/account/data/repositories/local/local_auth_repo.dart';
+import '../constants/app_constants.dart';
+import '../navigation/route_name.dart';
 
 
 class ApiClient {
@@ -105,17 +111,12 @@ class ApiClient {
 
   void _onError(DioException e, ErrorInterceptorHandler handler) async {
     if (e.response?.statusCode == 401) {
-      // try {
-      //   await handleTokenExpireException?.call(e, handler);
-      // } catch (_) {
-      //   return handler.reject(e);
-      // }
-      //Note: Uncomment this line if the refresh token api is being called in a loop in development
-      // return handler.reject(e);
-
-      final cloneRequest = await _repeateRequest(e);
-      return handler.resolve(cloneRequest);
+      final localAuthRepo = GetIt.I<LocalAuthRepository>();
+      await localAuthRepo.clearAuthData(); // Clear stored tokens
+      AppConstants.rootNavigatorKey.currentContext?.go(RouteName.login);
+      return handler.reject(e);
     }
+
     // if (e.response?.data['message'] != null && e.response?.data['message'].isNotEmpty) {
     //   showToast(e.response?.data['message'], type: ToastType.error);
     // } else if (e.type == DioExceptionType.connectionTimeout) {

@@ -30,13 +30,13 @@ abstract class LevelModel with _$LevelModel {
 @Freezed(toJson: true)
 abstract class DisciplineModel with _$DisciplineModel {
   const factory DisciplineModel({
-    required int id,
+    @JsonKey(includeIfNull: false) int? id,
     required String name,
     required List<LevelModel> levels,
     required bool hasRanking,
     required SportType sportType,
     @JsonKey(includeIfNull: false) String? logoUrl,
-    required String status,
+    @JsonKey(includeIfNull: false) String? status,
     @JsonKey(includeIfNull: false) DateTime? createdAt,
     @JsonKey(includeIfNull: false) DateTime? updatedAt,
   }) = _DisciplineModel;

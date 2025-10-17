@@ -11,11 +11,13 @@ class GetDisciplineImageRequested extends DisciplineImageEvent {
 
 class UploadDisciplineImageRequested extends DisciplineImageEvent {
   final int disciplineId;
-  final File imageFile;
+  final Uint8List imageBytes;
+  final String fileName;
 
   UploadDisciplineImageRequested({
     required this.disciplineId,
-    required this.imageFile,
+    required this.imageBytes,
+    required this.fileName,
   });
 }
 

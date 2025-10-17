@@ -1,18 +1,18 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-enum StatusType {
+enum DisciplineStatus {
   @JsonValue(true)
   active(true, 'Active'),
   @JsonValue(false)
   inactive(false, 'Inactive');
 
-  const StatusType(this.apiValue, this.displayName);
+  const DisciplineStatus(this.apiValue, this.displayName);
 
   final bool apiValue;
   final String displayName;
 
-  static StatusType? fromApiValue(bool apiValue) {
-    for (StatusType type in StatusType.values) {
+  static DisciplineStatus? fromApiValue(bool apiValue) {
+    for (DisciplineStatus type in DisciplineStatus.values) {
       if (type.apiValue == apiValue) {
         return type;
       }
@@ -21,13 +21,13 @@ enum StatusType {
   }
 
   static List<String> get dropdownValues {
-    return ['All Status', ...StatusType.values.map((e) => e.displayName)];
+    return ['All Status', ...DisciplineStatus.values.map((e) => e.displayName)];
   }
 
   static bool? getApiValueFromDisplayName(String? displayName) {
     if (displayName == null || displayName == 'All Status') return null;
     
-    for (StatusType type in StatusType.values) {
+    for (DisciplineStatus type in DisciplineStatus.values) {
       if (type.displayName == displayName) {
         return type.apiValue;
       }

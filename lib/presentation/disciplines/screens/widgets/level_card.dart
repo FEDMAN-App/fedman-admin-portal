@@ -15,7 +15,7 @@ class LevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 400),
+      constraints: BoxConstraints(minWidth: 350,maxWidth: 500, ),
       child: Card(
 
         elevation: 5,
@@ -25,6 +25,7 @@ class LevelCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -77,6 +78,7 @@ class CategoryListItem extends StatelessWidget {
           ),
           16.horizontalSpace,
           Wrap(
+
             spacing: 8,
             runSpacing: 8,
             children: values.map((value) => CategoryChip(label: value)).toList(),

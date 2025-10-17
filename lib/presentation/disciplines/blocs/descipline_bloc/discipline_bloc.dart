@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -14,6 +16,7 @@ class DisciplineBloc extends Bloc<DisciplineEvent, DisciplineState> {
   DisciplineBloc({required this.disciplineRepo}) : super(DisciplineInitial()) {
     on<GetDisciplinesRequested>(_onGetDisciplinesRequested);
     on<GetDisciplineRequested>(_onGetDisciplineRequested);
+    on<CreateDisciplineRequested>(_onCreateDisciplineRequested);
     on<UpdateDisciplineRequested>(_onUpdateDisciplineRequested);
     on<ActivateDisciplineRequested>(_onActivateDisciplineRequested);
     on<DeactivateDisciplineRequested>(_onDeactivateDisciplineRequested);
@@ -56,6 +59,24 @@ class DisciplineBloc extends Bloc<DisciplineEvent, DisciplineState> {
         emit(DisciplineLoaded(discipline: result.data!));
       } else {
         emit(DisciplineError(message: result.message ?? 'Failed to get discipline'));
+      }
+    } catch (e) {
+      emit(DisciplineError(message: 'Error: $e'));
+    }
+  }
+
+  Future<void> _onCreateDisciplineRequested(
+    CreateDisciplineRequested event,
+    Emitter<DisciplineState> emit,
+  ) async {
+    try {
+      emit(DisciplineLoading());
+      final result = await disciplineRepo.createDiscipline(event.discipline);
+
+      if (result.success && result.data != null) {
+        emit(DisciplineOperationSuccess(message: result.message ?? 'Discipline created successfully'));
+      } else {
+        emit(DisciplineError(message: result.message ?? 'Failed to create discipline'));
       }
     } catch (e) {
       emit(DisciplineError(message: 'Error: $e'));
@@ -124,11 +145,11 @@ class DisciplineBloc extends Bloc<DisciplineEvent, DisciplineState> {
     Emitter<DisciplineState> emit,
   ) async {
     try {
-      emit(DisciplineLoading());
+      emit(DisciplinesLoading());
       final result = await disciplineRepo.deleteDiscipline(event.disciplineId);
 
       if (result.success) {
-        emit(DisciplineOperationSuccess(message: result.message ?? 'Discipline deleted successfully'));
+        emit(DisciplineDeleteSuccess(message: result.message ?? 'Discipline deleted successfully'));
       } else {
         emit(DisciplineError(message: result.message ?? 'Failed to delete discipline'));
       }

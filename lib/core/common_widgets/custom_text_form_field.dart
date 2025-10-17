@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/countries.dart';
@@ -10,7 +9,6 @@ import 'package:intl_phone_field/phone_number.dart';
 
 import '../constants/app_colors.dart';
 import '../theme/app_text_styles.dart';
-
 
 class CustomTextFormField extends StatelessWidget {
   final String hintText;
@@ -24,8 +22,11 @@ class CustomTextFormField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final Function(String? value)? onChange;
- final EdgeInsets? contentPadding;
- final double? height;
+  final Function(String)? onFieldSubmitted;
+  final EdgeInsets? contentPadding;
+  final double? height;
+  final int? maxLines;
+  final bool expands;
 
   const CustomTextFormField({
     super.key,
@@ -38,69 +39,61 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.readOnly = false,
     this.onTap,
-    this.onChange,this.prefixIcon,
-    this.contentPadding,this.height
+    this.onChange,
+    this.onFieldSubmitted,
+    this.prefixIcon,
+    this.contentPadding,
+    this.height,
+    this.maxLines,
+    this.expands=true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return
-        TextFormField(
-          expands: true,
-          maxLines: null,
-          onChanged:onChange ,
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          readOnly: readOnly,
-          onTap: onTap,
-          onTapOutside: (event) {
-            FocusScope.of(context).unfocus();
-          },
-          obscureText: obscureText,
-          style: AppTextStyles.cta2.copyWith(
+    return TextFormField(
+      expands: expands,
+      maxLines: maxLines,
+      onChanged: onChange,
+      onFieldSubmitted: onFieldSubmitted,
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      readOnly: readOnly,
+      onTap: onTap,
+      onTapOutside: (event) {
+        FocusScope.of(context).unfocus();
+      },
+      obscureText: obscureText,
+      style: AppTextStyles.cta2.copyWith(color: AppColors.baseBlackColor),
+      cursorColor: AppColors.primaryColor,
 
-            color: AppColors.baseBlackColor,
-          ),
-          cursorColor: AppColors.primaryColor,
+      decoration: InputDecoration(
+        constraints: BoxConstraints(maxHeight: 50, minHeight: 45),
+        hintText: hintText,
 
-          decoration: InputDecoration(
-            constraints: BoxConstraints(maxHeight: 50,minHeight: 45),
-            hintText: hintText,
+        hintStyle: AppTextStyles.cta2.copyWith(color: AppColors.greyColor),
+        contentPadding: contentPadding,
 
-            hintStyle: AppTextStyles.cta2.copyWith(
-              color: AppColors.greyColor,
-            ),
-            contentPadding:contentPadding,
+        suffixIcon: suffixIcon,
+        prefixIcon: prefixIcon,
 
-            suffixIcon: suffixIcon,
-            prefixIcon:prefixIcon ,
-
-            suffixIconColor: AppColors.greyColor,
-            filled: true,
-            fillColor: AppColors.baseWhiteColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(
-                color: AppColors.neutral200,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(
-                color: AppColors.neutral200,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(
-                color: AppColors.neutral200,
-              ),
-            ),
-
-          ),
-        );
-
+        suffixIconColor: AppColors.greyColor,
+        filled: true,
+        fillColor: AppColors.baseWhiteColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: AppColors.neutral200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: AppColors.neutral200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(color: AppColors.neutral200),
+        ),
+      ),
+    );
   }
 }
 

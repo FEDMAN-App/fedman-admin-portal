@@ -1,4 +1,5 @@
 import 'package:fedman_admin_app/core/constants/app_colors.dart';
+import 'package:fedman_admin_app/core/utils/format_date.dart';
 import 'package:flutter/material.dart';
 import 'package:fedman_admin_app/core/extensions/space.dart';
 import 'package:fedman_admin_app/core/theme/app_text_styles.dart';
@@ -46,16 +47,20 @@ class DisciplineCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   DisciplineImageWidget(
-                    disciplineId: discipline.id,
+                    disciplineId: discipline.id!,
                     width: 90,
                     height: 70,
                     borderRadius: 8,
                     fit: BoxFit.cover,
                   ),
-                  IconButton(
-                    onPressed: () => _showContextMenu(context),
-                    icon: const Icon(Icons.more_horiz),
-                    color: Colors.grey[600],
+                  Builder(
+                    builder: (context) {
+                      return IconButton(
+                        onPressed: () => _showContextMenu(context),
+                        icon: const Icon(Icons.more_horiz),
+                        color: Colors.grey[600],
+                      );
+                    }
                   ),
                 ],
               ),
@@ -112,7 +117,7 @@ class DisciplineCard extends StatelessWidget {
               ),
               4.verticalSpace,
               Text(
-                'Created ${_formatDate(discipline.createdAt)}',
+                'Created: ${formatDate(discipline.createdAt,'MMM dd, yyyy' )}',
                 style: AppTextStyles.body2.copyWith(
                   color: AppColors.neutral600,
                 ),
@@ -127,12 +132,17 @@ class DisciplineCard extends StatelessWidget {
   void _showContextMenu(BuildContext context) {
     final RenderBox button = context.findRenderObject() as RenderBox;
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
+    
+    // Get button position relative to overlay
+    final Offset buttonPosition = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Size buttonSize = button.size;
+    
+    // Position menu to the bottom right of the more icon
+    final RelativeRect position = RelativeRect.fromLTRB(
+      buttonPosition.dx + buttonSize.width - 120, // Right-align menu starting from button's right edge
+      buttonPosition.dy + buttonSize.height + 4,   // Position below button with small gap
+      buttonPosition.dx,                           // Right boundary
+      buttonPosition.dy,                           // Bottom boundary
     );
 
     DisciplineContextMenu.show(

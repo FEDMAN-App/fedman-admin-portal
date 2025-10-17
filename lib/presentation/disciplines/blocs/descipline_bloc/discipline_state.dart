@@ -42,3 +42,9 @@ final class DisciplineOperationSuccess extends DisciplineState {
 
    DisciplineOperationSuccess({required this.message});
 }
+
+final class DisciplineDeleteSuccess extends DisciplineState {
+  final String message;
+
+   DisciplineDeleteSuccess({required this.message});
+}

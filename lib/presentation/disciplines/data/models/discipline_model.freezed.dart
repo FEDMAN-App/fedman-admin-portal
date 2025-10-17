@@ -568,7 +568,7 @@ as List<String>,
 /// @nodoc
 mixin _$DisciplineModel {
 
- int get id; String get name; List<LevelModel> get levels; bool get hasRanking; SportType get sportType;@JsonKey(includeIfNull: false) String? get logoUrl; String get status;@JsonKey(includeIfNull: false) DateTime? get createdAt;@JsonKey(includeIfNull: false) DateTime? get updatedAt;
+@JsonKey(includeIfNull: false) int? get id; String get name; List<LevelModel> get levels; bool get hasRanking; SportType get sportType;@JsonKey(includeIfNull: false) String? get logoUrl;@JsonKey(includeIfNull: false) String? get status;@JsonKey(includeIfNull: false) DateTime? get createdAt;@JsonKey(includeIfNull: false) DateTime? get updatedAt;
 /// Create a copy of DisciplineModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -601,7 +601,7 @@ abstract mixin class $DisciplineModelCopyWith<$Res>  {
   factory $DisciplineModelCopyWith(DisciplineModel value, $Res Function(DisciplineModel) _then) = _$DisciplineModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, List<LevelModel> levels, bool hasRanking, SportType sportType,@JsonKey(includeIfNull: false) String? logoUrl, String status,@JsonKey(includeIfNull: false) DateTime? createdAt,@JsonKey(includeIfNull: false) DateTime? updatedAt
+@JsonKey(includeIfNull: false) int? id, String name, List<LevelModel> levels, bool hasRanking, SportType sportType,@JsonKey(includeIfNull: false) String? logoUrl,@JsonKey(includeIfNull: false) String? status,@JsonKey(includeIfNull: false) DateTime? createdAt,@JsonKey(includeIfNull: false) DateTime? updatedAt
 });
 
 
@@ -618,16 +618,16 @@ class _$DisciplineModelCopyWithImpl<$Res>
 
 /// Create a copy of DisciplineModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? levels = null,Object? hasRanking = null,Object? sportType = null,Object? logoUrl = freezed,Object? status = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? levels = null,Object? hasRanking = null,Object? sportType = null,Object? logoUrl = freezed,Object? status = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,levels: null == levels ? _self.levels : levels // ignore: cast_nullable_to_non_nullable
 as List<LevelModel>,hasRanking: null == hasRanking ? _self.hasRanking : hasRanking // ignore: cast_nullable_to_non_nullable
 as bool,sportType: null == sportType ? _self.sportType : sportType // ignore: cast_nullable_to_non_nullable
 as SportType,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -714,7 +714,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl,  String status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl, @JsonKey(includeIfNull: false)  String? status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DisciplineModel() when $default != null:
 return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportType,_that.logoUrl,_that.status,_that.createdAt,_that.updatedAt);case _:
@@ -735,7 +735,7 @@ return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportTyp
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl,  String status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeIfNull: false)  int? id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl, @JsonKey(includeIfNull: false)  String? status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _DisciplineModel():
 return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportType,_that.logoUrl,_that.status,_that.createdAt,_that.updatedAt);case _:
@@ -755,7 +755,7 @@ return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportTyp
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl,  String status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeIfNull: false)  int? id,  String name,  List<LevelModel> levels,  bool hasRanking,  SportType sportType, @JsonKey(includeIfNull: false)  String? logoUrl, @JsonKey(includeIfNull: false)  String? status, @JsonKey(includeIfNull: false)  DateTime? createdAt, @JsonKey(includeIfNull: false)  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _DisciplineModel() when $default != null:
 return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportType,_that.logoUrl,_that.status,_that.createdAt,_that.updatedAt);case _:
@@ -770,10 +770,10 @@ return $default(_that.id,_that.name,_that.levels,_that.hasRanking,_that.sportTyp
 @JsonSerializable()
 
 class _DisciplineModel implements DisciplineModel {
-  const _DisciplineModel({required this.id, required this.name, required final  List<LevelModel> levels, required this.hasRanking, required this.sportType, @JsonKey(includeIfNull: false) this.logoUrl, required this.status, @JsonKey(includeIfNull: false) this.createdAt, @JsonKey(includeIfNull: false) this.updatedAt}): _levels = levels;
+  const _DisciplineModel({@JsonKey(includeIfNull: false) this.id, required this.name, required final  List<LevelModel> levels, required this.hasRanking, required this.sportType, @JsonKey(includeIfNull: false) this.logoUrl, @JsonKey(includeIfNull: false) this.status, @JsonKey(includeIfNull: false) this.createdAt, @JsonKey(includeIfNull: false) this.updatedAt}): _levels = levels;
   factory _DisciplineModel.fromJson(Map<String, dynamic> json) => _$DisciplineModelFromJson(json);
 
-@override final  int id;
+@override@JsonKey(includeIfNull: false) final  int? id;
 @override final  String name;
  final  List<LevelModel> _levels;
 @override List<LevelModel> get levels {
@@ -785,7 +785,7 @@ class _DisciplineModel implements DisciplineModel {
 @override final  bool hasRanking;
 @override final  SportType sportType;
 @override@JsonKey(includeIfNull: false) final  String? logoUrl;
-@override final  String status;
+@override@JsonKey(includeIfNull: false) final  String? status;
 @override@JsonKey(includeIfNull: false) final  DateTime? createdAt;
 @override@JsonKey(includeIfNull: false) final  DateTime? updatedAt;
 
@@ -822,7 +822,7 @@ abstract mixin class _$DisciplineModelCopyWith<$Res> implements $DisciplineModel
   factory _$DisciplineModelCopyWith(_DisciplineModel value, $Res Function(_DisciplineModel) _then) = __$DisciplineModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, List<LevelModel> levels, bool hasRanking, SportType sportType,@JsonKey(includeIfNull: false) String? logoUrl, String status,@JsonKey(includeIfNull: false) DateTime? createdAt,@JsonKey(includeIfNull: false) DateTime? updatedAt
+@JsonKey(includeIfNull: false) int? id, String name, List<LevelModel> levels, bool hasRanking, SportType sportType,@JsonKey(includeIfNull: false) String? logoUrl,@JsonKey(includeIfNull: false) String? status,@JsonKey(includeIfNull: false) DateTime? createdAt,@JsonKey(includeIfNull: false) DateTime? updatedAt
 });
 
 
@@ -839,16 +839,16 @@ class __$DisciplineModelCopyWithImpl<$Res>
 
 /// Create a copy of DisciplineModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? levels = null,Object? hasRanking = null,Object? sportType = null,Object? logoUrl = freezed,Object? status = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? levels = null,Object? hasRanking = null,Object? sportType = null,Object? logoUrl = freezed,Object? status = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_DisciplineModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,levels: null == levels ? _self._levels : levels // ignore: cast_nullable_to_non_nullable
 as List<LevelModel>,hasRanking: null == hasRanking ? _self.hasRanking : hasRanking // ignore: cast_nullable_to_non_nullable
 as bool,sportType: null == sportType ? _self.sportType : sportType // ignore: cast_nullable_to_non_nullable
 as SportType,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

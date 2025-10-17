@@ -16,6 +16,7 @@ import 'package:fedman_admin_app/core/extensions/space.dart';
 import 'package:fedman_admin_app/core/theme/app_text_styles.dart';
 import 'package:fedman_admin_app/core/constants/app_colors.dart';
 import 'package:fedman_admin_app/core/utils/responsive_helper.dart';
+import 'package:fedman_admin_app/core/utils/snackbar_utils.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/models/discipline_model.dart';
@@ -73,7 +74,7 @@ class _DisciplinesScreenViewState extends State<_DisciplinesScreenView> {
       GetDisciplinesRequested(
         page: _currentPageNotifier.value,
         search: _searchNotifier.value.isEmpty ? null : _searchNotifier.value,
-        status: StatusType.getApiValueFromDisplayName(_selectedStatusNotifier.value),
+        status: DisciplineStatus.getApiValueFromDisplayName(_selectedStatusNotifier.value),
         sportType: SportType.getApiValueFromDisplayName(_selectedTypeNotifier.value),
         hasRanking: RankingType.getApiValueFromDisplayName(_selectedRankingNotifier.value),
       ),
@@ -92,12 +93,18 @@ class _DisciplinesScreenViewState extends State<_DisciplinesScreenView> {
         child: BlocConsumer<DisciplineBloc, DisciplineState>(
           listener: (context, state) {
             if (state is DisciplinesError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
+              SnackbarUtils.showCustomToast(
+                context,
+                state.message,
+                isError: true,
               );
+            } else if (state is DisciplineDeleteSuccess) {
+              SnackbarUtils.showCustomToast(
+                context,
+                state.message,
+                isError: false,
+              );
+              _loadDisciplines();
             }
           },
           builder: (context, state) {
@@ -359,10 +366,16 @@ class _DisciplinesScreenViewState extends State<_DisciplinesScreenView> {
           final discipline = disciplines[index];
           return DisciplineCard(
             discipline: discipline,
+            onView: () {
+              context.go("${RouteName.disciplineDetail}?id=${discipline.id}");
+            },
             onTap: () {
               context.go("${RouteName.disciplineDetail}?id=${discipline.id}");
             },
-
+            onEdit: () {
+              context.go("${RouteName.updateDiscipline}?id=${discipline.id}");
+            },
+            onDelete: () => _showDeleteConfirmation( discipline),
           );
         },
       );
@@ -407,35 +420,68 @@ class _DisciplinesScreenViewState extends State<_DisciplinesScreenView> {
     );
   }
 
-  // void _showDisciplineMenu(BuildContext context, DisciplineModel discipline) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Container(
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           ListTile(
-  //             leading: const Icon(Icons.edit),
-  //             title: const Text('Edit Discipline'),
-  //             onTap: () {
-  //               Navigator.pop(context);
-  //               // Navigate to edit screen
-  //             },
-  //           ),
-  //           ListTile(
-  //             leading: const Icon(Icons.delete, color: Colors.red),
-  //             title: const Text('Delete Discipline', style: TextStyle(color: Colors.red)),
-  //             onTap: () {
-  //               Navigator.pop(context);
-  //               // Show delete confirmation
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _showDeleteConfirmation( DisciplineModel discipline) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: AlertDialog(
+
+          title: Text(
+            'Delete Discipline',
+            style: AppTextStyles.subHeading1,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to delete "${discipline.name}"?',
+                style: AppTextStyles.body1,
+              ),
+              8.verticalSpace,
+              Text(
+                'This action cannot be undone and will permanently remove the discipline',
+                style: AppTextStyles.body2.copyWith(
+                  color: AppColors.negativeColor,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'Cancel',
+                style: AppTextStyles.body1.copyWith(
+                  color: AppColors.greyColor,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                context.read<DisciplineBloc>().add(
+                  DeleteDisciplineRequested(disciplineId: discipline.id!),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: AppColors.baseWhiteColor,
+              ),
+              child: Text(
+                'Delete',
+                style: AppTextStyles.body1.copyWith(
+                  color: AppColors.baseWhiteColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {

@@ -1,8 +1,9 @@
-import 'dart:io';
+
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:fedman_admin_app/core/utils/logger_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
+
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_response.dart';
@@ -94,6 +95,27 @@ class DisciplineRepo {
     }
   }
 
+  Future<ApiResponse<DisciplineModel>> createDiscipline(
+    DisciplineModel discipline,
+  ) async {
+    final Response response = await apiClient.post(
+      '/federation-admin-service/disciplines',
+      data: discipline.toJson(),
+    );
+    GetIt.I.get<LoggerService>().i(discipline.toJson());
+    if (response.data["status"] == "success") {
+      final disciplineData = DisciplineModel.fromJson(response.data["data"]);
+      return ApiResponse.success(
+        disciplineData,
+        message: response.data["message"],
+        statusCode: response.statusCode,
+      );
+    } else {
+      logger.e('Failed to create discipline: ${response.data["message"]}');
+      return ApiResponse.failure(response.data["message"]);
+    }
+  }
+
   Future<ApiResponse<DisciplineModel>> updateDiscipline(
     int disciplineId,
     DisciplineModel discipline,
@@ -174,7 +196,7 @@ class DisciplineRepo {
 
     if (response.data["status"] == "success") {
       return ApiResponse.success(
-        response.data["data"]["logoUrl"] ?? '',
+        response.data["data"]?? '',
         message: response.data["message"],
         statusCode: response.statusCode,
       );
@@ -184,32 +206,39 @@ class DisciplineRepo {
     }
   }
 
-  Future<ApiResponse<String>> uploadDisciplineImage(
-    int disciplineId,
-    File imageFile,
-  ) async {
-    final FormData formData = FormData.fromMap({
-      'logo': await MultipartFile.fromFile(
-        imageFile.path,
-        filename: imageFile.path.split('/').last,
-      ),
-    });
+  /// Uploads a logo for a discipline
+  /// [disciplineId] - The ID of the discipline
+  /// [logoFileBytes] - The logo file bytes
+  /// [fileName] - The name of the file
+  Future<ApiResponse<String>> uploadDisciplineImage({
+    required int disciplineId,
+    required Uint8List logoFileBytes,
+    String? fileName,
+  }) async {
+      final formData = FormData.fromMap({
+        'logo': MultipartFile.fromBytes(
+          logoFileBytes.toList(),
+          filename: fileName ?? 'logo.png',
+        ),
+      });
 
-    final Response response = await apiClient.post(
-      '/federation-admin-service/disciplines/$disciplineId/logo',
-      data: formData,
-    );
-
-    if (response.data["status"] == "success") {
-      return ApiResponse.success(
-        response.data["data"]["logoUrl"] ?? '',
-        message: response.data["message"],
-        statusCode: response.statusCode,
+      final Response response = await apiClient.post(
+        '/federation-admin-service/disciplines/$disciplineId/logo',
+        data: formData,
       );
-    } else {
-      logger.e('Failed to upload discipline image: ${response.data["message"]}');
-      return ApiResponse.failure(response.data["message"]);
-    }
+
+      if (response.data["status"] == "success") {
+        GetIt.I.get<LoggerService>().i(response.data);
+        return ApiResponse.success(
+          response.data["data"]?["logoUrl"] ?? "Logo uploaded successfully",
+          message: response.data["message"],
+          statusCode: response.statusCode,
+        );
+      } else {
+        logger.e('Failed to upload discipline image: ${response.data["message"]}');
+        return ApiResponse.failure(response.data["message"]);
+      }
+
   }
 
   Future<ApiResponse<bool>> deleteDisciplineImage(int disciplineId) async {

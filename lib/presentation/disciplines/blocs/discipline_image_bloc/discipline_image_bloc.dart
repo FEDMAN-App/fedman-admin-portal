@@ -1,4 +1,7 @@
-import 'dart:io';
+
+
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -41,8 +44,10 @@ class DisciplineImageBloc extends Bloc<DisciplineImageEvent, DisciplineImageStat
     try {
       emit(DisciplineImageUploading());
       final result = await disciplineRepo.uploadDisciplineImage(
-        event.disciplineId,
-        event.imageFile,
+      disciplineId:   event.disciplineId,
+       logoFileBytes:  event.imageBytes,
+       fileName: event.fileName,
+
       );
 
       if (result.success && result.data != null) {

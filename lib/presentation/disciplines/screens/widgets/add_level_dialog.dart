@@ -1,21 +1,17 @@
+import 'package:fedman_admin_app/core/common_widgets/custom_buttons.dart';
+import 'package:fedman_admin_app/core/common_widgets/custom_text_form_field.dart';
+import 'package:fedman_admin_app/core/constants/app_assets.dart';
+import 'package:fedman_admin_app/core/constants/app_colors.dart';
+import 'package:fedman_admin_app/core/extensions/space.dart';
+import 'package:fedman_admin_app/core/theme/app_text_styles.dart';
+import 'package:fedman_admin_app/presentation/disciplines/data/models/discipline_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fedman_admin_app/core/common_widgets/custom_text_form_field.dart';
-import 'package:fedman_admin_app/core/common_widgets/custom_buttons.dart';
-import 'package:fedman_admin_app/core/constants/app_colors.dart';
-import 'package:fedman_admin_app/core/constants/app_assets.dart';
-import 'package:fedman_admin_app/core/theme/app_text_styles.dart';
-import 'package:fedman_admin_app/core/extensions/space.dart';
-import 'package:fedman_admin_app/presentation/disciplines/data/models/discipline_model.dart';
-import 'package:go_router/go_router.dart';
 
 class AddLevelDialog extends StatefulWidget {
   final LevelModel? levelToEdit;
-  
-  const AddLevelDialog({
-    super.key,
-    this.levelToEdit,
-  });
+
+  const AddLevelDialog({super.key, this.levelToEdit});
 
   @override
   State<AddLevelDialog> createState() => _AddLevelDialogState();
@@ -23,11 +19,13 @@ class AddLevelDialog extends StatefulWidget {
 
 class _AddLevelDialogState extends State<AddLevelDialog> {
   final TextEditingController _levelNameController = TextEditingController();
-  final ValueNotifier<List<CategoryModel>> _categoriesNotifier = ValueNotifier([]);
+  final ValueNotifier<List<CategoryModel>> _categoriesNotifier = ValueNotifier(
+    [],
+  );
   final Map<int, TextEditingController> _categoryNameControllers = {};
   final Map<int, TextEditingController> _categoryValueControllers = {};
   final ValueNotifier<String?> _errorMessageNotifier = ValueNotifier(null);
-  
+
   bool get isEditMode => widget.levelToEdit != null;
 
   @override
@@ -35,12 +33,16 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     super.initState();
     if (isEditMode && widget.levelToEdit != null) {
       _levelNameController.text = widget.levelToEdit!.levelName;
-      final categories = List<CategoryModel>.from(widget.levelToEdit!.categories);
+      final categories = List<CategoryModel>.from(
+        widget.levelToEdit!.categories,
+      );
       _categoriesNotifier.value = categories;
-      
+
       // Create controllers for existing categories
       for (int i = 0; i < categories.length; i++) {
-        _categoryNameControllers[i] = TextEditingController(text: categories[i].categoryName);
+        _categoryNameControllers[i] = TextEditingController(
+          text: categories[i].categoryName,
+        );
         _categoryValueControllers[i] = TextEditingController();
       }
     }
@@ -51,7 +53,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     _levelNameController.dispose();
     _categoriesNotifier.dispose();
     _errorMessageNotifier.dispose();
-    
+
     // Dispose all category controllers
     for (final controller in _categoryNameControllers.values) {
       controller.dispose();
@@ -59,7 +61,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     for (final controller in _categoryValueControllers.values) {
       controller.dispose();
     }
-    
+
     super.dispose();
   }
 
@@ -68,35 +70,36 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     if (_errorMessageNotifier.value != null) {
       _errorMessageNotifier.value = null;
     }
-    
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
+
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
     final newIndex = currentCategories.length;
-    
+
     // Create controllers for the new category
     _categoryNameControllers[newIndex] = TextEditingController();
     _categoryValueControllers[newIndex] = TextEditingController();
-    
-    currentCategories.add(CategoryModel(
-      categoryName: '',
-      categoryValues: [],
-    ));
+
+    currentCategories.add(CategoryModel(categoryName: '', categoryValues: []));
     _categoriesNotifier.value = currentCategories;
   }
 
   void _removeCategory(int index) {
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
     currentCategories.removeAt(index);
-    
+
     // Dispose and remove controllers for the removed category
     _categoryNameControllers[index]?.dispose();
     _categoryValueControllers[index]?.dispose();
     _categoryNameControllers.remove(index);
     _categoryValueControllers.remove(index);
-    
+
     // Update indices for remaining controllers
     final namesToUpdate = <int, TextEditingController>{};
     final valuesToUpdate = <int, TextEditingController>{};
-    
+
     for (final entry in _categoryNameControllers.entries) {
       if (entry.key > index) {
         namesToUpdate[entry.key - 1] = entry.value;
@@ -104,7 +107,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
         namesToUpdate[entry.key] = entry.value;
       }
     }
-    
+
     for (final entry in _categoryValueControllers.entries) {
       if (entry.key > index) {
         valuesToUpdate[entry.key - 1] = entry.value;
@@ -112,12 +115,12 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
         valuesToUpdate[entry.key] = entry.value;
       }
     }
-    
+
     _categoryNameControllers.clear();
     _categoryValueControllers.clear();
     _categoryNameControllers.addAll(namesToUpdate);
     _categoryValueControllers.addAll(valuesToUpdate);
-    
+
     _categoriesNotifier.value = currentCategories;
   }
 
@@ -126,8 +129,10 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     if (_errorMessageNotifier.value != null) {
       _errorMessageNotifier.value = null;
     }
-    
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
+
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
     currentCategories[index] = CategoryModel(
       categoryName: name,
       categoryValues: currentCategories[index].categoryValues,
@@ -136,7 +141,9 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
   }
 
   void _updateCategoryValues(int index, List<String> values) {
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
     currentCategories[index] = CategoryModel(
       categoryName: currentCategories[index].categoryName,
       categoryValues: values,
@@ -146,15 +153,19 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
 
   void _addCategoryValue(int categoryIndex, String value) {
     if (value.trim().isEmpty) return;
-    
+
     // Clear error when adding category value
     if (_errorMessageNotifier.value != null) {
       _errorMessageNotifier.value = null;
     }
-    
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
-    final currentValues = List<String>.from(currentCategories[categoryIndex].categoryValues);
-    
+
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
+    final currentValues = List<String>.from(
+      currentCategories[categoryIndex].categoryValues,
+    );
+
     if (!currentValues.contains(value.trim())) {
       currentValues.add(value.trim());
       _updateCategoryValues(categoryIndex, currentValues);
@@ -162,8 +173,12 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
   }
 
   void _removeCategoryValue(int categoryIndex, int valueIndex) {
-    final currentCategories = List<CategoryModel>.from(_categoriesNotifier.value);
-    final currentValues = List<String>.from(currentCategories[categoryIndex].categoryValues);
+    final currentCategories = List<CategoryModel>.from(
+      _categoriesNotifier.value,
+    );
+    final currentValues = List<String>.from(
+      currentCategories[categoryIndex].categoryValues,
+    );
     currentValues.removeAt(valueIndex);
     _updateCategoryValues(categoryIndex, currentValues);
   }
@@ -171,37 +186,39 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
   bool _validateForm() {
     // Clear previous error
     _errorMessageNotifier.value = null;
-    
+
     // Validate level name
     if (_levelNameController.text.trim().isEmpty) {
       _errorMessageNotifier.value = 'Level name is required';
       return false;
     }
-    
+
     // Validate at least one category exists
     if (_categoriesNotifier.value.isEmpty) {
       _errorMessageNotifier.value = 'At least one category is required';
       return false;
     }
-    
+
     // Validate each category
     for (int i = 0; i < _categoriesNotifier.value.length; i++) {
       final categoryName = _categoryNameControllers[i]?.text.trim() ?? '';
       final categoryValues = _categoriesNotifier.value[i].categoryValues;
-      
+
       // Validate category name
       if (categoryName.isEmpty) {
-        _errorMessageNotifier.value = 'Category name is required for all categories';
+        _errorMessageNotifier.value =
+            'Category name is required for all categories';
         return false;
       }
-      
+
       // Validate at least one category value
       if (categoryValues.isEmpty) {
-        _errorMessageNotifier.value = 'At least one value is required for each category';
+        _errorMessageNotifier.value =
+            'At least one value is required for each category';
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -211,13 +228,15 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
     // Collect current category data from controllers
     final updatedCategories = <CategoryModel>[];
     final currentCategories = _categoriesNotifier.value;
-    
+
     for (int i = 0; i < currentCategories.length; i++) {
       final categoryName = _categoryNameControllers[i]?.text.trim() ?? '';
-      updatedCategories.add(CategoryModel(
-        categoryName: categoryName,
-        categoryValues: currentCategories[i].categoryValues,
-      ));
+      updatedCategories.add(
+        CategoryModel(
+          categoryName: categoryName,
+          categoryValues: currentCategories[i].categoryValues,
+        ),
+      );
     }
 
     final level = LevelModel(
@@ -232,9 +251,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         width: 600,
         constraints: const BoxConstraints(maxHeight: 700),
@@ -245,15 +262,15 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
             children: [
               _buildHeader(),
               24.verticalSpace,
-               Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLevelNameSection(),
-                    24.verticalSpace,
-                    _buildCategoriesSection(),
-                  ],
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLevelNameSection(),
+                  24.verticalSpace,
+                  _buildCategoriesSection(),
+                ],
+              ),
               24.verticalSpace,
               _buildErrorMessage(),
               _buildActionButtons(),
@@ -289,10 +306,12 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
           style: AppTextStyles.subHeading1,
         ),
         Spacer(),
-        IconButton(onPressed: () {
-          Navigator.of(context).pop();
-        }, icon: Icon(Icons.cancel_outlined,))
-
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(Icons.cancel_outlined),
+        ),
       ],
     );
   }
@@ -304,7 +323,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
         if (errorMessage == null) {
           return const SizedBox.shrink();
         }
-        
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
@@ -318,11 +337,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.error_outline,
-                color: AppColors.errorColor,
-                size: 20,
-              ),
+              Icon(Icons.error_outline, color: AppColors.errorColor, size: 20),
               8.horizontalSpace,
               Expanded(
                 child: Text(
@@ -346,9 +361,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
       children: [
         Text(
           'Level name',
-          style: AppTextStyles.body1.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w500),
         ),
         8.verticalSpace,
         CustomTextFormField(
@@ -375,9 +388,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
           children: [
             Text(
               'Categories',
-              style: AppTextStyles.body1.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.body1.copyWith(fontWeight: FontWeight.w500),
             ),
             TextButton.icon(
               onPressed: _addNewCategory,
@@ -414,7 +425,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
                 ),
               );
             }
-            
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: categories.asMap().entries.map((entry) {
@@ -432,12 +443,14 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
   Widget _buildCategoryItem(int index, CategoryModel category) {
     // Get or create controllers for this category
     if (!_categoryNameControllers.containsKey(index)) {
-      _categoryNameControllers[index] = TextEditingController(text: category.categoryName);
+      _categoryNameControllers[index] = TextEditingController(
+        text: category.categoryName,
+      );
     }
     if (!_categoryValueControllers.containsKey(index)) {
       _categoryValueControllers[index] = TextEditingController();
     }
-    
+
     final categoryNameController = _categoryNameControllers[index]!;
     final categoryValueController = _categoryValueControllers[index]!;
 
@@ -482,14 +495,16 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
             children: [
               Expanded(
                 child: CustomTextFormField(
+                  maxLines: 1,
+                  expands: false,
                   controller: categoryValueController,
                   hintText: 'e.g., 8", 12", 16"',
-                  // onFieldSubmitted: (value) {
-                  //   if (value?.isNotEmpty == true) {
-                  //     _addCategoryValue(index, value!);
-                  //     categoryValueController.clear();
-                  //   }
-                  // },
+                  onFieldSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      _addCategoryValue(index, value);
+                      categoryValueController.clear();
+                    }
+                  },
                 ),
               ),
               8.horizontalSpace,
@@ -508,11 +523,7 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
                       categoryValueController.clear();
                     }
                   },
-                  icon: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  icon: const Icon(Icons.add, color: Colors.white, size: 20),
                 ),
               ),
             ],
@@ -522,11 +533,17 @@ class _AddLevelDialogState extends State<AddLevelDialog> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: category.categoryValues.asMap().entries.map((valueEntry) {
+              children: category.categoryValues.asMap().entries.map((
+                valueEntry,
+              ) {
                 final valueIndex = valueEntry.key;
                 final value = valueEntry.value;
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+
                   decoration: BoxDecoration(
                     color: AppColors.primary50,
                     borderRadius: BorderRadius.circular(20),

@@ -1,3 +1,4 @@
+
 part of 'discipline_bloc.dart';
 
 @immutable
@@ -23,6 +24,12 @@ class GetDisciplineRequested extends DisciplineEvent {
   final int disciplineId;
 
   GetDisciplineRequested({required this.disciplineId});
+}
+
+class CreateDisciplineRequested extends DisciplineEvent {
+  final DisciplineModel discipline;
+
+  CreateDisciplineRequested({required this.discipline});
 }
 
 class UpdateDisciplineRequested extends DisciplineEvent {

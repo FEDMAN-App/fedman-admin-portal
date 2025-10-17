@@ -39,7 +39,7 @@ Map<String, dynamic> _$LevelModelToJson(_LevelModel instance) =>
 
 _DisciplineModel _$DisciplineModelFromJson(Map<String, dynamic> json) =>
     _DisciplineModel(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
       levels: (json['levels'] as List<dynamic>)
           .map((e) => LevelModel.fromJson(e as Map<String, dynamic>))
@@ -47,7 +47,7 @@ _DisciplineModel _$DisciplineModelFromJson(Map<String, dynamic> json) =>
       hasRanking: json['hasRanking'] as bool,
       sportType: $enumDecode(_$SportTypeEnumMap, json['sportType']),
       logoUrl: json['logoUrl'] as String?,
-      status: json['status'] as String,
+      status: json['status'] as String?,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -58,13 +58,13 @@ _DisciplineModel _$DisciplineModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$DisciplineModelToJson(_DisciplineModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'id': ?instance.id,
       'name': instance.name,
       'levels': instance.levels,
       'hasRanking': instance.hasRanking,
       'sportType': _$SportTypeEnumMap[instance.sportType]!,
       'logoUrl': ?instance.logoUrl,
-      'status': instance.status,
+      'status': ?instance.status,
       'createdAt': ?instance.createdAt?.toIso8601String(),
       'updatedAt': ?instance.updatedAt?.toIso8601String(),
     };
